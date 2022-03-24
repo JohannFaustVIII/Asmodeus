@@ -8,5 +8,5 @@ RUN gradle clean build
 FROM openjdk:8-jre
 
 WORKDIR /usr/app/
-COPY --from=builder /usr/app/build/libs/Asmodeus-*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=builder /usr/app/build/libs/Asmodeus-*.jar app.jar
