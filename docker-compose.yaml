@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  asmo:
+    image: asmodeus
+    environment:
+      ASMO_IN_PORT: 8901
+      ASMO_OUT_PORT: 5432
+      ASMO_OUT_IP: postgres_db
+    expose:
+      - "8901"
+    ports:
+      - "8352:8901"
+    depends_on:
+      - postgres_db
+
+  postgres_db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+
