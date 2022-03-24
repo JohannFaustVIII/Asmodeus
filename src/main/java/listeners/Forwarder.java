@@ -19,11 +19,11 @@ public class Forwarder {
     }
 
     public void startForwarding() throws IOException {
-        System.out.println("Starting server socket");
+        System.out.println("Starting server socket on port " + inputPort);
         ServerSocket serverSocket = new ServerSocket(inputPort);
         Socket socket = serverSocket.accept();
 
-        System.out.println("Connecting to output...");
+        System.out.println("Connecting to output " + outIp + ":" + outputPort);
         Socket outSocket = new Socket(outIp, outputPort);
 
         InputStream inInputStream = socket.getInputStream();
