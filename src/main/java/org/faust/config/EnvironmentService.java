@@ -1,4 +1,4 @@
-package config;
+package org.faust.config;
 
 import java.util.Optional;
 

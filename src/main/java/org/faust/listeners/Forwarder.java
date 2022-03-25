@@ -1,4 +1,4 @@
-package listeners;
+package org.faust.listeners;
 
 import java.io.IOException;
 import java.io.InputStream;

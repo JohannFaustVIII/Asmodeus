@@ -1,5 +1,7 @@
-import config.EnvironmentService;
-import listeners.Forwarder;
+package org.faust;
+
+import org.faust.config.EnvironmentService;
+import org.faust.listeners.Forwarder;
 
 import java.io.IOException;
 
