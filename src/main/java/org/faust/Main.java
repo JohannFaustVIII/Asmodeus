@@ -1,7 +1,7 @@
 package org.faust;
 
 import org.faust.config.EnvironmentService;
-import org.faust.listeners.Forwarder;
+import org.faust.listeners.Listener;
 
 import java.io.IOException;
 
@@ -13,8 +13,8 @@ public class Main {
         int outputPort = envService.getOutputPort();
         String outIP = envService.getOutIP();
 
-        Forwarder forwarder = new Forwarder(inputPort, outputPort, outIP);
-        forwarder.startForwarding();
+        Listener listener = new Listener(inputPort, outputPort, outIP);
+        listener.startListening();
     }
 
 }

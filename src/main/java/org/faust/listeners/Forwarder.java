@@ -3,41 +3,40 @@ package org.faust.listeners;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Forwarder {
+public class Forwarder implements Runnable {
 
-    private final int inputPort;
-    private final int outputPort;
-    private final String outIp;
+    private final Socket inSocket;
+    private final Socket outSocket;
+    private final InputStream inInputStream;
+    private final OutputStream inOutputStream;
+    private final InputStream outInputStream;
+    private final OutputStream outOutputStream;
 
-    public Forwarder(int inputPort, int outputPort, String outIp) {
-        this.inputPort = inputPort;
-        this.outputPort = outputPort;
-        this.outIp = outIp;
+    public Forwarder(Socket inSocket, Socket outSocket) throws IOException {
+        this.inSocket = inSocket;
+        this.outSocket = outSocket;
+        inInputStream = inSocket.getInputStream();
+        inOutputStream = inSocket.getOutputStream();
+
+        outInputStream = outSocket.getInputStream();
+        outOutputStream = outSocket.getOutputStream();
     }
 
-    public void startForwarding() throws IOException {
-        System.out.println("Starting server socket on port " + inputPort);
-        ServerSocket serverSocket = new ServerSocket(inputPort);
-        Socket socket = serverSocket.accept();
-
-        System.out.println("Connecting to output " + outIp + ":" + outputPort);
-        Socket outSocket = new Socket(outIp, outputPort);
-
-        InputStream inInputStream = socket.getInputStream();
-        OutputStream inOutputStream = socket.getOutputStream();
-
-        InputStream outInputStream = outSocket.getInputStream();
-        OutputStream outOutputStream = outSocket.getOutputStream();
-
-        System.out.println("Starting forwarding.");
-        while(true) {
-            sendBetweenStreams(inInputStream, outOutputStream);
-            sendBetweenStreams(outInputStream, inOutputStream);
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getId() + ": Starting forwarding.");
+        while (true) {
+            try {
+                sendBetweenStreams(inInputStream, outOutputStream);
+                sendBetweenStreams(outInputStream, inOutputStream);
+            } catch (IOException e) {
+                System.err.println(Thread.currentThread().getId() + ": IOException thrown: " + e);
+                return;
             }
         }
+    }
 
     private void sendBetweenStreams(InputStream inputStream, OutputStream outputStream) throws IOException {
         int available = inputStream.available();
