@@ -19,7 +19,7 @@ public class Listener {
     public void startListening() throws IOException {
         System.out.println("Starting server socket on port " + inputPort);
         ServerSocket serverSocket = new ServerSocket(inputPort);
-        while (true) {
+        while (!serverSocket.isClosed()) {
             Socket socket = serverSocket.accept();
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);

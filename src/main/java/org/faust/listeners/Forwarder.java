@@ -7,16 +7,14 @@ import java.net.Socket;
 
 public class Forwarder implements Runnable {
 
-    private final Socket inSocket;
-    private final Socket outSocket;
     private final InputStream inInputStream;
     private final OutputStream inOutputStream;
     private final InputStream outInputStream;
     private final OutputStream outOutputStream;
 
+    private boolean isActive = true;
+
     public Forwarder(Socket inSocket, Socket outSocket) throws IOException {
-        this.inSocket = inSocket;
-        this.outSocket = outSocket;
         inInputStream = inSocket.getInputStream();
         inOutputStream = inSocket.getOutputStream();
 
@@ -27,25 +25,40 @@ public class Forwarder implements Runnable {
     @Override
     public void run() {
         System.out.println(Thread.currentThread().getId() + ": Starting forwarding.");
-        while (true) {
-            try {
-                sendBetweenStreams(inInputStream, outOutputStream);
-                sendBetweenStreams(outInputStream, inOutputStream);
-            } catch (IOException e) {
-                System.err.println(Thread.currentThread().getId() + ": IOException thrown: " + e);
-                return;
-            }
+        try {
+            Thread t1 = new Thread(() -> sendBetweenStreams(inInputStream, outOutputStream));
+            Thread t2 = new Thread(() -> sendBetweenStreams(outInputStream, inOutputStream));
+            t1.start();
+            t2.start();
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            System.err.println(Thread.currentThread().getId() + ": InterruptedException thrown: " + e);
         }
+        System.out.println(Thread.currentThread().getId() + ": Stopped forwarding.");
     }
 
-    private void sendBetweenStreams(InputStream inputStream, OutputStream outputStream) throws IOException {
-        int available = inputStream.available();
-        if (available > 0) {
-            System.out.println("Sending " + available + " bytes.");
-            byte[] bytes = new byte[available];
-            inputStream.read(bytes);
-            outputStream.write(bytes);
-            outputStream.flush();
+    private void sendBetweenStreams(InputStream inputStream, OutputStream outputStream) {
+        try {
+            while (isActive) {
+                int firstByte = inputStream.read();
+                if (firstByte != -1) {
+                    outputStream.write(firstByte);
+                    int available = inputStream.available();
+                    if (available > 0) {
+                        System.out.println("Sending " + available + " bytes.");
+                        byte[] bytes = new byte[available];
+                        inputStream.read(bytes);
+                        outputStream.write(bytes);
+                    }
+                    outputStream.flush();
+                } else {
+                    isActive = false;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println(Thread.currentThread().getId() + ": IOException thrown: " + e);
+            isActive = false;
         }
     }
 }
