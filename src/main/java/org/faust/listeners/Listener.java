@@ -26,7 +26,7 @@ public class Listener {
             Socket outSocket = new Socket(outIp, outputPort);
 
             Forwarder forwarder = new Forwarder(socket, outSocket);
-            new Thread(forwarder).start();
+            forwarder.startForwarding();
         }
     }
 }
