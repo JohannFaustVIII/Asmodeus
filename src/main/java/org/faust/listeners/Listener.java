@@ -1,5 +1,7 @@
 package org.faust.listeners;
 
+import org.faust.stats.StatsService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,13 +21,15 @@ public class Listener {
     public void startListening() throws IOException {
         System.out.println("Starting server socket on port " + inputPort);
         ServerSocket serverSocket = new ServerSocket(inputPort);
+        StatsService service = new StatsService();
+
         while (!serverSocket.isClosed()) {
             Socket socket = serverSocket.accept();
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);
 
-            Forwarder forwarder = new Forwarder(socket, outSocket);
+            Forwarder forwarder = new Forwarder(socket, outSocket, service);
             forwarder.startForwarding();
         }
     }
