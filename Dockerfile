@@ -3,7 +3,7 @@ WORKDIR /usr/app/
 COPY build.gradle settings.gradle ./
 
 COPY src src
-RUN gradle clean build
+RUN gradle clean bootJar
 
 FROM openjdk:8-jre
 

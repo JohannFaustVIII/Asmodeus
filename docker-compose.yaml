@@ -7,10 +7,12 @@ services:
       ASMO_IN_PORT: 8901
       ASMO_OUT_PORT: 5432
       ASMO_OUT_IP: postgres_db
+      ASMO_HTTP_PORT: 9090
     expose:
       - "8901"
     ports:
       - "8352:8901"
+      - "9099:9090"
     depends_on:
       - postgres_db
 
