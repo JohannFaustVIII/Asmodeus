@@ -1,7 +1,10 @@
 package org.faust.config;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
+@Service
 public class EnvironmentService {
 
     public int getInputPort() {
@@ -16,6 +19,10 @@ public class EnvironmentService {
         return getEnvString("ASMO_OUT_IP", "127.0.0.1");
     }
 
+    public int getHttpPort() {
+        return getEnvInt("ASMO_HTTP_PORT", 8080);
+    }
+
     private int getEnvInt(String name, int defaultValue) {
         return getEnv(name).map(Integer::parseInt).orElse(defaultValue);
     }
@@ -27,4 +34,6 @@ public class EnvironmentService {
     private Optional<String> getEnv(String name) {
         return Optional.ofNullable(System.getenv(name));
     }
+
+
 }
