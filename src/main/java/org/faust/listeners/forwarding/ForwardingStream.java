@@ -1,4 +1,4 @@
-package org.faust.listeners;
+package org.faust.listeners.forwarding;
 
 import org.faust.stats.ForwardingStats;
 import org.faust.stats.StatsService;
@@ -29,19 +29,9 @@ public class ForwardingStream implements Runnable {
         try {
             boolean active = true;
             while (active && phaser.getArrivedParties() == 0) {
-                int firstByte = inputStream.read();
-                if (firstByte != -1) {
-                    outputStream.write(firstByte);
-                    int available = inputStream.available();
-                    if (available > 0) {
-                        statsService.add(new ForwardingStats(Thread.currentThread().getId(), available + 1));
-                        byte[] bytes = new byte[available];
-                        inputStream.read(bytes);
-                        outputStream.write(bytes);
-                    } else {
-                        statsService.add(new ForwardingStats(Thread.currentThread().getId(), 1));
-                    }
-                    outputStream.flush();
+                int forwarded = forwardBytes();
+                if (forwarded != 0) {
+                    statsService.add(new ForwardingStats(Thread.currentThread().getId(), forwarded));
                 } else {
                     active = false;
                 }
@@ -52,5 +42,23 @@ public class ForwardingStream implements Runnable {
             phaser.arriveAndAwaitAdvance();
             System.out.println(Thread.currentThread().getId() + ": Stopped forwarding.");
         }
+    }
+
+    private int forwardBytes() throws IOException {
+        int count = 0;
+        int firstByte = inputStream.read();
+        if (firstByte != -1) {
+            count++;
+            outputStream.write(firstByte);
+            int available = inputStream.available();
+            if (available > 0) {
+                byte[] bytes = new byte[available];
+                int read = inputStream.read(bytes);
+                count += read;
+                outputStream.write(bytes, 0, read);
+            }
+            outputStream.flush();
+        }
+        return count;
     }
 }

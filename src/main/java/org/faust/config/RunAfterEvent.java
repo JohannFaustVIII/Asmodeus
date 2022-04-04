@@ -1,4 +1,4 @@
-package org.faust;
+package org.faust.config;
 
 import org.faust.listeners.Listener;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -18,6 +18,6 @@ public class RunAfterEvent {
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() throws IOException {
-        listener.startListening();
+        listener.listen();
     }
 }

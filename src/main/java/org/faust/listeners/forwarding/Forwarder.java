@@ -1,4 +1,4 @@
-package org.faust.listeners;
+package org.faust.listeners.forwarding;
 
 import org.faust.stats.StatsService;
 
@@ -15,8 +15,6 @@ public class Forwarder {
     private final InputStream outInputStream;
     private final OutputStream outOutputStream;
     private final StatsService statsService;
-
-    private boolean isActive = true;
 
     public Forwarder(Socket inSocket, Socket outSocket, StatsService service) throws IOException {
         inInputStream = inSocket.getInputStream();
