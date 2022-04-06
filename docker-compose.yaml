@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   asmo:
+    container_name: asmodeus
     image: asmodeus
     environment:
       ASMO_IN_PORT: 8901
@@ -20,5 +21,31 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: postgres
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9999:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+    - type: bind
+      source: ./prometheus/prometheus.yml
+      target: /etc/prometheus/prometheus.yml
+    depends_on:
+      - asmo
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+    - type: bind
+      source: ./grafana/grafana.ini
+      target: /etc/grafana/grafana.ini
+    depends_on:
+      - prometheus
 
 
