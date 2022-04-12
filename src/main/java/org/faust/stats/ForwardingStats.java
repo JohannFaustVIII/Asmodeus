@@ -2,6 +2,8 @@ package org.faust.stats;
 
 public class ForwardingStats {
 
+    private static final String LOG_PATTERN = "ThreadId: %d\t timestamp: %d\t read: %d";
+
     private final long threadId;
     private final int count;
     private final long timestamp;
@@ -22,5 +24,21 @@ public class ForwardingStats {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public String getLogMessage() {
+        return String.format(LOG_PATTERN,
+                threadId,
+                timestamp,
+                count);
+    }
+
+    @Override
+    public String toString() {
+        return "ForwardingStats{" +
+                "threadId=" + threadId +
+                ", count=" + count +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }

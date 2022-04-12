@@ -42,7 +42,7 @@ public class StatsService {
         synchronized (stats) {
             System.out.println("Last reads: " + stats.size());
             for (ForwardingStats stat : stats) {
-                System.out.println("ThreadId: " + stat.getThreadId() + "\t timestamp: " + stat.getTimestamp() + "\t read: " + stat.getCount());
+                System.out.println(stat.getLogMessage());
             }
             stats.clear();
         }
