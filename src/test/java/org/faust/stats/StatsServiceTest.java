@@ -1,7 +1,11 @@
 package org.faust.stats;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -18,14 +23,21 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class StatsServiceTest {
+
+    private static ByteArrayOutputStream printResult;
+
+    @BeforeAll
+    public static void setUp() {
+        redirectSystemOut();
+    }
 
     @ParameterizedTest(name = "showStats: {0}")
     @MethodSource("showStatsCases")
     void showStats(List<ForwardingStats> statsList) throws IOException {
         //given
         StatsService service = new StatsService();
-        ByteArrayOutputStream printResult = redirectSystemOut();
         for (ForwardingStats stats : statsList) {
             service.add(stats);
         }
@@ -34,7 +46,7 @@ class StatsServiceTest {
         service.show();
 
         //then
-        String[] resultLines = getSystemOutResultLines(printResult);
+        String[] resultLines = getSystemOutResultLines();
 
         Assertions.assertEquals("Last reads: " + statsList.size(), resultLines[0]);
         assertDataLinesContainCorrectData(statsList, resultLines);
@@ -45,21 +57,25 @@ class StatsServiceTest {
     void showEmptyStatsAfterSecondShow(List<ForwardingStats> statsList) throws IOException {
         //given
         StatsService service = new StatsService();
-        ByteArrayOutputStream printResult = redirectSystemOut();
         for (ForwardingStats stats : statsList) {
             service.add(stats);
         }
         service.show();
-        cleanSystemOut(printResult);
+        cleanSystemOut();
 
         //when
         service.show();
 
         //then
-        String[] resultLines = getSystemOutResultLines(printResult);
+        String[] resultLines = getSystemOutResultLines();
 
         Assertions.assertEquals("Last reads: 0", resultLines[0]);
         Assertions.assertEquals(1, resultLines.length);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        cleanSystemOut();
     }
 
     private void assertDataLinesContainCorrectData(List<ForwardingStats> statsList, String[] resultLines) {
@@ -69,19 +85,19 @@ class StatsServiceTest {
         }
     }
 
-    private ByteArrayOutputStream redirectSystemOut() {
+    private static void redirectSystemOut() {
         ByteArrayOutputStream systemOutStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(systemOutStream));
-        return systemOutStream;
+        printResult = systemOutStream;
     }
 
-    private void cleanSystemOut(ByteArrayOutputStream systemOutStream) {
-        systemOutStream.reset();
+    private void cleanSystemOut() {
+        printResult.reset();
     }
 
-    private String[] getSystemOutResultLines(ByteArrayOutputStream systemOutStream) throws IOException {
-        systemOutStream.flush();
-        String result = new String(systemOutStream.toByteArray());
+    private String[] getSystemOutResultLines() throws IOException {
+        printResult.flush();
+        String result = new String(printResult.toByteArray());
         String[] resultLines = result.split("\n");
         return resultLines;
     }
