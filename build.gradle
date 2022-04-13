@@ -28,7 +28,7 @@ jar {
                 'Main-Class': 'org.faust.Main'
         )
     }
-    baseName 'Asmodeus'
+    archiveBaseName = 'Asmodeus'
 }
 
 test {
