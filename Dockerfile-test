@@ -1,0 +1,3 @@
+FROM gradle:7.4.2-jdk18
+WORKDIR /test
+ENTRYPOINT ["gradle","clean","test"]
