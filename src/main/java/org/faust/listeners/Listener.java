@@ -1,5 +1,6 @@
 package org.faust.listeners;
 
+import org.faust.file.WSService;
 import org.faust.listeners.forwarding.Forwarder;
 import org.faust.stats.StatsService;
 
@@ -13,12 +14,14 @@ public class Listener {
     private final int outputPort;
     private final String outIp;
     private final StatsService statsService;
+    private final WSService wsService;
 
-    public Listener(int inputPort, int outputPort, String outIp, StatsService statsService) {
+    public Listener(int inputPort, int outputPort, String outIp, StatsService statsService, WSService wsService) {
         this.inputPort = inputPort;
         this.outputPort = outputPort;
         this.outIp = outIp;
         this.statsService = statsService;
+        this.wsService = wsService;
     }
 
     public void listen() throws IOException {
@@ -31,7 +34,7 @@ public class Listener {
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);
 
-            Forwarder forwarder = new Forwarder(socket, outSocket, statsService);
+            Forwarder forwarder = new Forwarder(socket, outSocket, statsService, wsService, outIp);
             forwarder.startForwarding();
         }
     }
