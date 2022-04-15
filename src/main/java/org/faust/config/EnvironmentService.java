@@ -23,6 +23,10 @@ public class EnvironmentService {
         return getEnvInt("ASMO_HTTP_PORT", 8080);
     }
 
+    public String getWSFilePath() {
+        return getEnvString("ASMO_WS_FILE", "file.pcap");
+    }
+
     private int getEnvInt(String name, int defaultValue) {
         return getEnv(name).map(Integer::parseInt).orElse(defaultValue);
     }
