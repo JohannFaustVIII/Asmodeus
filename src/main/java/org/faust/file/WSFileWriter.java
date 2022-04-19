@@ -25,7 +25,7 @@ public class WSFileWriter {
         outputStream = new FileOutputStream(outputFile);
     }
 
-    private void saveTokenToFile(Token token) {
+    public void saveTokenToFile(Token token) {
         try {
             outputStream.write(token.toBytes());
             outputStream.flush();

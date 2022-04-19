@@ -1,6 +1,7 @@
 package org.faust.file;
 
 import org.faust.config.EnvironmentService;
+import org.faust.file.token.DataToken;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class WSService {
                 WSForwardEvent event = null;
                 try {
                     event = getEvent();
+                    wsFileWriter.saveTokenToFile(new DataToken(event));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

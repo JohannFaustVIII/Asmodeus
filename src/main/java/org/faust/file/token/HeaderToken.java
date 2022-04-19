@@ -12,7 +12,7 @@ public class HeaderToken implements Token {
     private final int reserved2 = 0;
     private final int snapLen = 0xffffffff;
     private final int fcs = 0x90000000;
-    private final int linkType = 228;
+    private final int linkType = 1;
 
 
     @Override
