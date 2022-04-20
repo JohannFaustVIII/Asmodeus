@@ -7,9 +7,11 @@ import java.util.List;
 
 public class TCPToken implements Token {
 
+    private static int counter = 1;
+
     private final byte[] destination;
     private final byte[] source;
-    private final int type = 0x0080;
+    private final int type = 0x0008;
 
     private final byte version = 0x40;
     private final byte headerLength = 0x05;
@@ -24,9 +26,9 @@ public class TCPToken implements Token {
     private final byte[] sourceAddress;
     private final byte[] destinationAddress;
 
-    private final short srcPort = 0x0000;
-    private final short dstPort = 0x0000;
-    private final int sequenceNumber = 0x00;
+    private final short srcPort = 0x0400;
+    private final short dstPort = 0x0300;
+    private final int sequenceNumber = counter++;
     private final int ackNumber = 0x00;
     private final short headLength = 0x0050;
     private final short reserved = 0x0000;
@@ -36,6 +38,7 @@ public class TCPToken implements Token {
     private final short urgent = 0x0000;
 
     private final byte[] data;
+
 
 
     public TCPToken(String inputIP, String outputIP, byte[] data) {
@@ -67,7 +70,7 @@ public class TCPToken implements Token {
 
         result.add(ConvertUtils.toBytes(version + headerLength, 1));
         result.add(ConvertUtils.toBytes(tos, 1));
-        result.add(ConvertUtils.toBytes(totalLength, 2));
+        result.add(ConvertUtils.reverse(ConvertUtils.toBytes(totalLength, 2)));
         result.add(ConvertUtils.toBytes(identification, 2));
         result.add(ConvertUtils.toBytes(flags + fragmentOffset, 2));
         result.add(ConvertUtils.toBytes(ttl, 1));
@@ -76,8 +79,8 @@ public class TCPToken implements Token {
         result.add(sourceAddress);
         result.add(destinationAddress);
 
-        result.add(ConvertUtils.toBytes(srcPort, 2));
-        result.add(ConvertUtils.toBytes(dstPort, 2));
+        result.add(ConvertUtils.reverse(ConvertUtils.toBytes(srcPort, 2)));
+        result.add(ConvertUtils.reverse(ConvertUtils.toBytes(dstPort, 2)));
         result.add(ConvertUtils.toBytes(sequenceNumber, 4));
         result.add(ConvertUtils.toBytes(ackNumber, 4));
         result.add(ConvertUtils.toBytes(headLength + reserved + codeBits, 2));
