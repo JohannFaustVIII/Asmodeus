@@ -3,11 +3,13 @@ package org.faust.file.token;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TCPToken implements Token {
 
-    private static int counter = 1;
+    private static final Map<String, Integer> counters = new HashMap<>();
 
     private final byte[] destination;
     private final byte[] source;
@@ -28,7 +30,7 @@ public class TCPToken implements Token {
 
     private final short srcPort = 0x0400;
     private final short dstPort = 0x0300;
-    private final int sequenceNumber = counter++;
+    private final int sequenceNumber;
     private final int ackNumber = 0x00;
     private final short headLength = 0x0050;
     private final short reserved = 0x0000;
@@ -48,6 +50,8 @@ public class TCPToken implements Token {
         this.sourceAddress = getBytesFromIP(inputIP);
         this.destinationAddress = getBytesFromIP(outputIP);
         this.data = data;
+
+        this.sequenceNumber = getNextCounter(inputIP, outputIP, data.length);
     }
 
     private byte[] getBytesFromIP(String outputIP) {
@@ -58,6 +62,14 @@ public class TCPToken implements Token {
             e.printStackTrace();
         }
         return ip.getAddress();
+    }
+
+    private int getNextCounter(String inputIP, String outputIP, int length) {
+        String key = inputIP + "-" + outputIP;
+        counters.putIfAbsent(key, 0);
+        int value = counters.get(key);
+        counters.put(key, value + length);
+        return value;
     }
 
     @Override
@@ -81,7 +93,7 @@ public class TCPToken implements Token {
 
         result.add(ConvertUtils.reverse(ConvertUtils.toBytes(srcPort, 2)));
         result.add(ConvertUtils.reverse(ConvertUtils.toBytes(dstPort, 2)));
-        result.add(ConvertUtils.toBytes(sequenceNumber, 4));
+        result.add(ConvertUtils.reverse(ConvertUtils.toBytes(sequenceNumber, 4)));
         result.add(ConvertUtils.toBytes(ackNumber, 4));
         result.add(ConvertUtils.toBytes(headLength + reserved + codeBits, 2));
         result.add(ConvertUtils.toBytes(windowSize, 2));
