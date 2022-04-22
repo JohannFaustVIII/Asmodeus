@@ -19,8 +19,10 @@ public class ForwardingStream implements Runnable {
     private final WSService wsService;
     private final String inIp;
     private final String outIp;
+    private final int inPort;
+    private final int outPort;
 
-    public ForwardingStream(Phaser phaser, InputStream inputStream, OutputStream outputStream, StatsService statsService, WSService wsService, String inIp, String outIp) {
+    public ForwardingStream(Phaser phaser, InputStream inputStream, OutputStream outputStream, StatsService statsService, WSService wsService, String inIp, String outIp, int inPort, int outPort) {
         this.phaser = phaser;
         this.phaser.register();
         this.inputStream = inputStream;
@@ -29,6 +31,8 @@ public class ForwardingStream implements Runnable {
         this.wsService = wsService;
         this.inIp = inIp;
         this.outIp = outIp;
+        this.inPort = inPort;
+        this.outPort = outPort;
     }
 
     @Override
@@ -78,6 +82,6 @@ public class ForwardingStream implements Runnable {
         result[0] = (byte) firstByte;
         System.arraycopy(restOfBytes, 0, result, 1, restOfBytes.length);
 
-        wsService.addForwarderBytes(new WSForwardEvent(inIp, outIp, result));
+        wsService.addForwarderBytes(new WSForwardEvent(inIp, outIp, inPort, outPort, result));
     }
 }

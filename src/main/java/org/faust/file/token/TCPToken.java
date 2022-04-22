@@ -28,8 +28,8 @@ public class TCPToken implements Token {
     private final byte[] sourceAddress;
     private final byte[] destinationAddress;
 
-    private final short srcPort = 0x0400;
-    private final short dstPort = 0x0300;
+    private final short srcPort;
+    private final short dstPort;
     private final int sequenceNumber;
     private final int ackNumber = 0x00;
     private final short headLength = 0x0050;
@@ -43,12 +43,14 @@ public class TCPToken implements Token {
 
 
 
-    public TCPToken(String inputIP, String outputIP, byte[] data) {
+    public TCPToken(String inputIP, String outputIP, int inputPort, int outputPort, byte[] data) {
         this.destination = new byte[6];
         this.source = new byte[6];
         this.totalLength = (short) (40 + data.length);
         this.sourceAddress = getBytesFromIP(inputIP);
         this.destinationAddress = getBytesFromIP(outputIP);
+        this.srcPort = (short) inputPort;
+        this.dstPort = (short) outputPort;
         this.data = data;
 
         this.sequenceNumber = getNextCounter(inputIP, outputIP, data.length);
@@ -65,7 +67,7 @@ public class TCPToken implements Token {
     }
 
     private int getNextCounter(String inputIP, String outputIP, int length) {
-        String key = inputIP + "-" + outputIP;
+        String key = inputIP + ":" + srcPort + "-" + outputIP + ":" + dstPort;
         counters.putIfAbsent(key, 0);
         int value = counters.get(key);
         counters.put(key, value + length);

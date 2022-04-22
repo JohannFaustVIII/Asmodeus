@@ -19,6 +19,8 @@ public class Forwarder {
     private final WSService wsService;
     private final String outIp;
     private final String inIp;
+    private final int outPort;
+    private final int inPort;
 
     public Forwarder(Socket inSocket, Socket outSocket, StatsService statsService, WSService wsService, String outIp) throws IOException {
         inInputStream = inSocket.getInputStream();
@@ -31,12 +33,15 @@ public class Forwarder {
         this.wsService = wsService;
         this.outIp = outIp;
         this.inIp = inSocket.getInetAddress().getHostAddress();
+
+        this.outPort = outSocket.getPort();
+        this.inPort = inSocket.getPort();
     }
 
     public void startForwarding() {
         Phaser phaser = new Phaser();
-        Thread t1 = new Thread(new ForwardingStream(phaser, inInputStream, outOutputStream, statsService, wsService, inIp, outIp));
-        Thread t2 = new Thread(new ForwardingStream(phaser, outInputStream, inOutputStream, statsService, wsService, outIp, inIp));
+        Thread t1 = new Thread(new ForwardingStream(phaser, inInputStream, outOutputStream, statsService, wsService, inIp, outIp, inPort, outPort));
+        Thread t2 = new Thread(new ForwardingStream(phaser, outInputStream, inOutputStream, statsService, wsService, outIp, inIp, outPort, inPort));
         t1.start();
         t2.start();
     }
