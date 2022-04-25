@@ -22,17 +22,17 @@ public class ForwardingStream implements Runnable {
     private final int inPort;
     private final int outPort;
 
-    public ForwardingStream(Phaser phaser, InputStream inputStream, OutputStream outputStream, StatsService statsService, WSService wsService, String inIp, String outIp, int inPort, int outPort) {
-        this.phaser = phaser;
+    public ForwardingStream(ForwardingStreamBuilder builder) {
+        this.phaser = builder.phaser;
         this.phaser.register();
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
-        this.statsService = statsService;
-        this.wsService = wsService;
-        this.inIp = inIp;
-        this.outIp = outIp;
-        this.inPort = inPort;
-        this.outPort = outPort;
+        this.inputStream = builder.inputStream;
+        this.outputStream = builder.outputStream;
+        this.statsService = builder.statsService;
+        this.wsService = builder.wsService;
+        this.inIp = builder.inIp;
+        this.outIp = builder.outIp;
+        this.inPort = builder.inPort;
+        this.outPort = builder.outPort;
     }
 
     @Override
@@ -83,5 +83,66 @@ public class ForwardingStream implements Runnable {
         System.arraycopy(restOfBytes, 0, result, 1, restOfBytes.length);
 
         wsService.addForwarderBytes(new WSForwardEvent(inIp, outIp, inPort, outPort, result));
+    }
+
+    public static class ForwardingStreamBuilder {
+        private Phaser phaser;
+        private InputStream inputStream;
+        private OutputStream outputStream;
+        private StatsService statsService;
+        private WSService wsService;
+        private String inIp;
+        private String outIp;
+        private int inPort;
+        private int outPort;
+
+        public ForwardingStreamBuilder phaser(Phaser phaser) {
+            this.phaser = phaser;
+            return this;
+        }
+
+        public ForwardingStreamBuilder inputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        public ForwardingStreamBuilder outputStream(OutputStream outputStream) {
+            this.outputStream = outputStream;
+            return this;
+        }
+
+        public ForwardingStreamBuilder statsService(StatsService statsService) {
+            this.statsService = statsService;
+            return this;
+        }
+
+        public ForwardingStreamBuilder wsService(WSService wsService) {
+            this.wsService = wsService;
+            return this;
+        }
+
+        public ForwardingStreamBuilder inIp(String inIp) {
+            this.inIp = inIp;
+            return this;
+        }
+
+        public ForwardingStreamBuilder outIp(String outIp) {
+            this.outIp = outIp;
+            return this;
+        }
+
+        public ForwardingStreamBuilder inPort(int inPort) {
+            this.inPort = inPort;
+            return this;
+        }
+
+        public ForwardingStreamBuilder outPort(int outPort) {
+            this.outPort = outPort;
+            return this;
+        }
+
+        public ForwardingStream build() {
+            return new ForwardingStream(this);
+        }
     }
 }

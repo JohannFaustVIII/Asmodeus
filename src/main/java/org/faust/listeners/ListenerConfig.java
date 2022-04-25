@@ -25,7 +25,13 @@ public class ListenerConfig {
         int outputPort = envService.getOutputPort();
         String outIP = envService.getOutIP();
 
-        return new Listener(inputPort, outputPort, outIP, statsService, wsService);
+        return new Listener.ListenerBuilder()
+                .inputPort(inputPort)
+                .outputPort(outputPort)
+                .outIp(outIP)
+                .statsService(statsService)
+                .wsService(wsService)
+                .build();
     }
 
 }

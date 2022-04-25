@@ -38,7 +38,13 @@ class ForwardingStreamTest {
         Phaser phaser = new Phaser();
         InputStream inStream = new ByteArrayInputStream(inputData);
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ForwardingStream stream = new ForwardingStream(phaser, inStream, outStream, mockedStats, wsService, "", "", 0, 0);
+        ForwardingStream stream = new ForwardingStream.ForwardingStreamBuilder()
+                .phaser(phaser)
+                .inputStream(inStream)
+                .outputStream(outStream)
+                .statsService(mockedStats)
+                .wsService(wsService)
+                .build();
 
         //when
         stream.run();
@@ -53,7 +59,13 @@ class ForwardingStreamTest {
         Phaser phaser = new Phaser();
         InputStream inStream = new ByteArrayInputStream(new byte[0]);
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ForwardingStream stream = new ForwardingStream(phaser, inStream, outStream, mockedStats, wsService, "", "", 0, 0);
+        ForwardingStream stream = new ForwardingStream.ForwardingStreamBuilder()
+                .phaser(phaser)
+                .inputStream(inStream)
+                .outputStream(outStream)
+                .statsService(mockedStats)
+                .wsService(wsService)
+                .build();
 
         //when
         stream.run();
