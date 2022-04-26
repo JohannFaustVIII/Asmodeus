@@ -41,8 +41,6 @@ public class TCPToken implements Token {
 
     private final byte[] data;
 
-
-
     public TCPToken(String inputIP, String outputIP, int inputPort, int outputPort, byte[] data) {
         this.destination = new byte[6];
         this.source = new byte[6];

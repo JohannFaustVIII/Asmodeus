@@ -14,10 +14,6 @@ public class ForwardingStats {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public long getThreadId() {
-        return threadId;
-    }
-
     public int getCount() {
         return count;
     }
