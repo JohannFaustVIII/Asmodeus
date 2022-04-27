@@ -1,0 +1,4 @@
+forwarders:
+  - inputPort: 8901
+    outputPort: 5432
+    outputIp: 'postgres_db'
