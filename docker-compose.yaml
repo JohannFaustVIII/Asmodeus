@@ -8,9 +8,9 @@ services:
       ASMO_CONFIG_FILE: 'config.yaml'
       ASMO_HTTP_PORT: 9090
     expose:
-      - "8901"
+      - "8901-8903"
     ports:
-      - "8352:8901"
+      - "8352-8354:8901-8903"
       - "9099:9090"
     volumes:
       - type: bind

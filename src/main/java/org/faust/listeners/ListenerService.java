@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class ListenerService {
@@ -24,19 +26,24 @@ public class ListenerService {
 
     public void startListeners() {
         List<ForwardConfig> forwardConfigList = envService.getForwardingConfig();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(forwardConfigList.size());
+
         forwardConfigList.forEach(config -> {
-            try {
-                new Listener.ListenerBuilder()
-                        .inputPort(config.getInputPort())
-                        .outputPort(config.getOutputPort())
-                        .outIp(config.getOutputIp())
-                        .statsService(statsService)
-                        .wsService(wsService)
-                        .build()
-                        .listen();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            executorService.submit(() -> {
+                try {
+                    new Listener.ListenerBuilder()
+                            .inputPort(config.getInputPort())
+                            .outputPort(config.getOutputPort())
+                            .outIp(config.getOutputIp())
+                            .statsService(statsService)
+                            .wsService(wsService)
+                            .build()
+                            .listen();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         });
     }
 }
