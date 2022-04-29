@@ -17,10 +17,6 @@ public class ForwardYAMLConfig {
         return forwarders;
     }
 
-    public void setForwarders(List<ForwardConfig> forwarders) {
-        this.forwarders = forwarders;
-    }
-
     @Override
     public String toString() {
         return "ForwardYAMLConfig{" +

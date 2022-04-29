@@ -21,24 +21,12 @@ public class ForwardConfig {
         return inputPort;
     }
 
-    public void setInputPort(int inputPort) {
-        this.inputPort = inputPort;
-    }
-
     public int getOutputPort() {
         return outputPort;
     }
 
-    public void setOutputPort(int outputPort) {
-        this.outputPort = outputPort;
-    }
-
     public String getOutputIp() {
         return outputIp;
-    }
-
-    public void setOutputIp(String outputIp) {
-        this.outputIp = outputIp;
     }
 
     @Override
