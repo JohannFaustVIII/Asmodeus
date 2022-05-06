@@ -1,5 +1,7 @@
 # Asmodeus
 
+The idea of Asmodeus is to fulfill "lust" of monitoring traffic between containers. Traffic, coming through Asmodeus, is monitored and saved into pcap file. (and it is a playground for new ideas)
+
 ## Asmodeus Environment Variables
 
 Name | Default | Description |
