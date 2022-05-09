@@ -1,6 +1,6 @@
-package org.faust.file;
+package org.faust.wireshark;
 
-public class WSForwardEvent {
+public class WiresharkForwardEvent {
 
     private final String inIP;
     private final String outIP;
@@ -10,7 +10,7 @@ public class WSForwardEvent {
     private final long timestamp;
 
 
-    public WSForwardEvent(String inIP, String outIP, int inPort, int outPort, byte[] bytes) {
+    public WiresharkForwardEvent(String inIP, String outIP, int inPort, int outPort, byte[] bytes) {
         this.inIP = inIP;
         this.outIP = outIP;
         this.inPort = inPort;

@@ -1,9 +1,8 @@
-package org.faust.listeners.forwarding;
+package org.faust.forwarding;
 
-import org.faust.file.WSService;
-import org.faust.stats.StatsService;
+import org.faust.wireshark.WiresharkService;
+import org.faust.statistics.StatisticsService;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Phaser;
@@ -14,22 +13,22 @@ public class Forwarder {
     private final OutputStream inOutputStream;
     private final InputStream outInputStream;
     private final OutputStream outOutputStream;
-    private final StatsService statsService;
-    private final WSService wsService;
+    private final StatisticsService statisticsService;
+    private final WiresharkService wiresharkService;
     private final String outIp;
     private final String inIp;
     private final int outPort;
     private final int inPort;
 
-    private Forwarder(ForwarderBuilder builder) throws IOException {
+    private Forwarder(ForwarderBuilder builder) {
         inInputStream = builder.inInputStream;
         inOutputStream = builder.inOutputStream;
 
         outInputStream = builder.outInputStream;
         outOutputStream = builder.outOutputStream;
 
-        this.statsService = builder.statsService;
-        this.wsService = builder.wsService;
+        this.statisticsService = builder.statisticsService;
+        this.wiresharkService = builder.wiresharkService;
         this.outIp = builder.outIp;
         this.inIp = builder.inIp;
 
@@ -43,8 +42,8 @@ public class Forwarder {
                 .phaser(phaser)
                 .inputStream(inInputStream)
                 .outputStream(outOutputStream)
-                .statsService(statsService)
-                .wsService(wsService)
+                .statsService(statisticsService)
+                .wsService(wiresharkService)
                 .inIp(inIp)
                 .outIp(outIp)
                 .inPort(inPort)
@@ -54,8 +53,8 @@ public class Forwarder {
                 .phaser(phaser)
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)
-                .statsService(statsService)
-                .wsService(wsService)
+                .statsService(statisticsService)
+                .wsService(wiresharkService)
                 .inIp(inIp)
                 .outIp(outIp)
                 .inPort(outPort)
@@ -70,8 +69,8 @@ public class Forwarder {
         private OutputStream inOutputStream;
         private InputStream outInputStream;
         private OutputStream outOutputStream;
-        private StatsService statsService;
-        private WSService wsService;
+        private StatisticsService statisticsService;
+        private WiresharkService wiresharkService;
         private String outIp;
         private String inIp;
         private int outPort;
@@ -97,13 +96,13 @@ public class Forwarder {
             return this;
         }
 
-        public ForwarderBuilder statsService(StatsService statsService) {
-            this.statsService = statsService;
+        public ForwarderBuilder statsService(StatisticsService statisticsService) {
+            this.statisticsService = statisticsService;
             return this;
         }
 
-        public ForwarderBuilder wsService(WSService wsService) {
-            this.wsService = wsService;
+        public ForwarderBuilder wsService(WiresharkService wiresharkService) {
+            this.wiresharkService = wiresharkService;
             return this;
         }
 
@@ -127,7 +126,7 @@ public class Forwarder {
             return this;
         }
 
-        public Forwarder build() throws IOException {
+        public Forwarder build() {
             return new Forwarder(this);
         }
     }

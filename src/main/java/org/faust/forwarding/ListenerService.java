@@ -1,9 +1,8 @@
-package org.faust.listeners;
+package org.faust.forwarding;
 
-import org.faust.config.EnvironmentService;
-import org.faust.config.ForwardConfig;
-import org.faust.file.WSService;
-import org.faust.stats.StatsService;
+import org.faust.environment.EnvironmentService;
+import org.faust.wireshark.WiresharkService;
+import org.faust.statistics.StatisticsService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,13 +14,13 @@ import java.util.concurrent.Executors;
 public class ListenerService {
 
     private final EnvironmentService envService;
-    private final StatsService statsService;
-    private final WSService wsService;
+    private final StatisticsService statisticsService;
+    private final WiresharkService wiresharkService;
 
-    public ListenerService(EnvironmentService envService, StatsService statsService, WSService wsService) {
+    public ListenerService(EnvironmentService envService, StatisticsService statisticsService, WiresharkService wiresharkService) {
         this.envService = envService;
-        this.statsService = statsService;
-        this.wsService = wsService;
+        this.statisticsService = statisticsService;
+        this.wiresharkService = wiresharkService;
     }
 
     public void startListeners() {
@@ -36,8 +35,8 @@ public class ListenerService {
                             .inputPort(config.getInputPort())
                             .outputPort(config.getOutputPort())
                             .outIp(config.getOutputIp())
-                            .statsService(statsService)
-                            .wsService(wsService)
+                            .statsService(statisticsService)
+                            .wsService(wiresharkService)
                             .build()
                             .listen();
                 } catch (IOException e) {

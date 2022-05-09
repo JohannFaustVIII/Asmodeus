@@ -1,4 +1,4 @@
-package org.faust.file.token;
+package org.faust.wireshark.token;
 
 import java.util.ArrayList;
 import java.util.List;

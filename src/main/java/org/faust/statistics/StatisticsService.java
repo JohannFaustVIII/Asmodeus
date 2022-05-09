@@ -1,4 +1,4 @@
-package org.faust.stats;
+package org.faust.statistics;
 
 import io.micrometer.core.instrument.Metrics;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
 
 @EnableScheduling
 @Service
-public class StatsService {
+public class StatisticsService {
 
-    private final List<ForwardingStats> stats = new ArrayList<>();
-    private final List<ForwardingStats> prometheusStats;
+    private final List<Statistics> stats = new ArrayList<>();
+    private final List<Statistics> prometheusStats;
 
-    public StatsService() {
+    public StatisticsService() {
         prometheusStats = Metrics.gauge("readBytes", Collections.emptyList(), new ArrayList<>(),
                 list -> list
                         .stream()
                         .filter(stat -> System.currentTimeMillis() - stat.getTimestamp() < 1000)
-                        .mapToInt(ForwardingStats::getCount)
+                        .mapToInt(Statistics::getCount)
                         .sum());
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(this::show, 5, 5, TimeUnit.SECONDS);
     }
 
-    public void add(ForwardingStats forwardingStats) {
+    public void add(Statistics forwardingStats) {
         synchronized (stats) {
             stats.add(forwardingStats);
             prometheusStats.add(forwardingStats);
@@ -41,7 +41,7 @@ public class StatsService {
     public void show() {
         synchronized (stats) {
             System.out.println("Last reads: " + stats.size());
-            for (ForwardingStats stat : stats) {
+            for (Statistics stat : stats) {
                 System.out.println(stat.getLogMessage());
             }
             stats.clear();
@@ -50,7 +50,7 @@ public class StatsService {
 
     @Scheduled(fixedRate = 1000)
     public void removePrometheusStats() {
-        List<ForwardingStats> statsToRemove = prometheusStats.stream()
+        List<Statistics> statsToRemove = prometheusStats.stream()
                 .filter(stat -> System.currentTimeMillis() - stat.getTimestamp() > 1000)
                 .collect(Collectors.toList());
         prometheusStats.removeAll(statsToRemove);

@@ -1,17 +1,17 @@
-package org.faust.file;
+package org.faust.wireshark;
 
-import org.faust.file.token.HeaderToken;
-import org.faust.file.token.Token;
+import org.faust.wireshark.token.HeaderToken;
+import org.faust.wireshark.token.Token;
 
 import java.io.*;
 
-public class WSFileWriter {
+public class WiresharkFileWriter {
 
     private final String filePath;
     private File outputFile;
     private OutputStream outputStream;
 
-    public WSFileWriter(String filePath) throws FileNotFoundException {
+    public WiresharkFileWriter(String filePath) throws FileNotFoundException {
         this.filePath = filePath;
         openFileOutputStream();
     }

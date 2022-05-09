@@ -1,8 +1,7 @@
-package org.faust.listeners;
+package org.faust.forwarding;
 
-import org.faust.file.WSService;
-import org.faust.listeners.forwarding.Forwarder;
-import org.faust.stats.StatsService;
+import org.faust.wireshark.WiresharkService;
+import org.faust.statistics.StatisticsService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,15 +12,15 @@ public class Listener {
     private final int inputPort;
     private final int outputPort;
     private final String outIp;
-    private final StatsService statsService;
-    private final WSService wsService;
+    private final StatisticsService statisticsService;
+    private final WiresharkService wiresharkService;
 
     private Listener(ListenerBuilder builder) {
         this.inputPort = builder.inputPort;
         this.outputPort = builder.outputPort;
         this.outIp = builder.outIp;
-        this.statsService = builder.statsService;
-        this.wsService = builder.wsService;
+        this.statisticsService = builder.statisticsService;
+        this.wiresharkService = builder.wiresharkService;
     }
 
     public void listen() throws IOException {
@@ -39,8 +38,8 @@ public class Listener {
                     .inOutputStream(socket.getOutputStream())
                     .outInputStream(outSocket.getInputStream())
                     .outOutputStream(outSocket.getOutputStream())
-                    .statsService(statsService)
-                    .wsService(wsService)
+                    .statsService(statisticsService)
+                    .wsService(wiresharkService)
                     .outIp(outIp)
                     .inIp(socket.getInetAddress().getHostAddress())
                     .outPort(outSocket.getPort())
@@ -55,8 +54,8 @@ public class Listener {
         private int inputPort;
         private int outputPort;
         private String outIp;
-        private StatsService statsService;
-        private WSService wsService;
+        private StatisticsService statisticsService;
+        private WiresharkService wiresharkService;
 
         public ListenerBuilder inputPort(int inputPort) {
             this.inputPort = inputPort;
@@ -73,13 +72,13 @@ public class Listener {
             return this;
         }
 
-        public ListenerBuilder statsService(StatsService statsService) {
-            this.statsService = statsService;
+        public ListenerBuilder statsService(StatisticsService statisticsService) {
+            this.statisticsService = statisticsService;
             return this;
         }
 
-        public ListenerBuilder wsService(WSService wsService) {
-            this.wsService = wsService;
+        public ListenerBuilder wsService(WiresharkService wiresharkService) {
+            this.wiresharkService = wiresharkService;
             return this;
         }
 

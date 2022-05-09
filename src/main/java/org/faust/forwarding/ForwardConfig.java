@@ -1,4 +1,4 @@
-package org.faust.config;
+package org.faust.forwarding;
 
 public class ForwardConfig {
 

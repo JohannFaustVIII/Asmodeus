@@ -1,7 +1,9 @@
-package org.faust.config;
+package org.faust.environment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.faust.forwarding.ForwardConfig;
+import org.faust.forwarding.ForwardYAMLConfig;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

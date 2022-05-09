@@ -1,9 +1,9 @@
-package org.faust.listeners.forwarding;
+package org.faust.forwarding;
 
-import org.faust.file.WSForwardEvent;
-import org.faust.file.WSService;
-import org.faust.stats.ForwardingStats;
-import org.faust.stats.StatsService;
+import org.faust.wireshark.WiresharkForwardEvent;
+import org.faust.wireshark.WiresharkService;
+import org.faust.statistics.ForwardingStats;
+import org.faust.statistics.StatisticsService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,8 @@ public class ForwardingStream implements Runnable {
     private final Phaser phaser;
     private final InputStream inputStream;
     private final OutputStream outputStream;
-    private final StatsService statsService;
-    private final WSService wsService;
+    private final StatisticsService statisticsService;
+    private final WiresharkService wiresharkService;
     private final String inIp;
     private final String outIp;
     private final int inPort;
@@ -27,8 +27,8 @@ public class ForwardingStream implements Runnable {
         this.phaser.register();
         this.inputStream = builder.inputStream;
         this.outputStream = builder.outputStream;
-        this.statsService = builder.statsService;
-        this.wsService = builder.wsService;
+        this.statisticsService = builder.statisticsService;
+        this.wiresharkService = builder.wiresharkService;
         this.inIp = builder.inIp;
         this.outIp = builder.outIp;
         this.inPort = builder.inPort;
@@ -43,7 +43,7 @@ public class ForwardingStream implements Runnable {
             while (active && phaser.getArrivedParties() == 0) {
                 int forwarded = forwardBytes();
                 if (forwarded != 0) {
-                    statsService.add(new ForwardingStats(Thread.currentThread().getId(), forwarded));
+                    statisticsService.add(new ForwardingStats(Thread.currentThread().getId(), forwarded));
                 } else {
                     active = false;
                 }
@@ -82,15 +82,15 @@ public class ForwardingStream implements Runnable {
         result[0] = (byte) firstByte;
         System.arraycopy(restOfBytes, 0, result, 1, restOfBytes.length);
 
-        wsService.addForwarderBytes(new WSForwardEvent(inIp, outIp, inPort, outPort, result));
+        wiresharkService.addForwarderBytes(new WiresharkForwardEvent(inIp, outIp, inPort, outPort, result));
     }
 
     public static class ForwardingStreamBuilder {
         private Phaser phaser;
         private InputStream inputStream;
         private OutputStream outputStream;
-        private StatsService statsService;
-        private WSService wsService;
+        private StatisticsService statisticsService;
+        private WiresharkService wiresharkService;
         private String inIp;
         private String outIp;
         private int inPort;
@@ -111,13 +111,13 @@ public class ForwardingStream implements Runnable {
             return this;
         }
 
-        public ForwardingStreamBuilder statsService(StatsService statsService) {
-            this.statsService = statsService;
+        public ForwardingStreamBuilder statsService(StatisticsService statisticsService) {
+            this.statisticsService = statisticsService;
             return this;
         }
 
-        public ForwardingStreamBuilder wsService(WSService wsService) {
-            this.wsService = wsService;
+        public ForwardingStreamBuilder wsService(WiresharkService wiresharkService) {
+            this.wiresharkService = wiresharkService;
             return this;
         }
 

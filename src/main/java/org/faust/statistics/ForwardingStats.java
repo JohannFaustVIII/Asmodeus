@@ -1,6 +1,6 @@
-package org.faust.stats;
+package org.faust.statistics;
 
-public class ForwardingStats {
+public class ForwardingStats implements Statistics{
 
     private static final String LOG_PATTERN = "ThreadId: %d\t timestamp: %d\t read: %d";
 

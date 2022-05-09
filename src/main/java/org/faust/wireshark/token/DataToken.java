@@ -1,6 +1,6 @@
-package org.faust.file.token;
+package org.faust.wireshark.token;
 
-import org.faust.file.WSForwardEvent;
+import org.faust.wireshark.WiresharkForwardEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class DataToken implements Token {
     private final int originalPacketLength;
     private final TCPToken tcpToken;
 
-    public DataToken(WSForwardEvent event) {
+    public DataToken(WiresharkForwardEvent event) {
         this.seconds = (int) (event.getTimestamp() / 1_000_000);
         this.microseconds = (int) (event.getTimestamp() % 1_000_000);
         this.tcpToken = new TCPToken(event.getInIP(), event.getOutIP(), event.getInPort(), event.getOutPort(), event.getBytes());

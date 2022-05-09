@@ -1,4 +1,6 @@
-package org.faust.config;
+package org.faust.forwarding;
+
+import org.faust.forwarding.ForwardConfig;
 
 import java.util.List;
 

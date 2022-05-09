@@ -1,9 +1,8 @@
-package org.faust.stats;
+package org.faust.statistics;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,19 +11,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @Execution(ExecutionMode.SAME_THREAD)
-class StatsServiceTest {
+class StatisticsServiceTest {
 
     private static ByteArrayOutputStream printResult;
 
@@ -37,7 +32,7 @@ class StatsServiceTest {
     @MethodSource("showStatsCases")
     void showStats(List<ForwardingStats> statsList) throws IOException {
         //given
-        StatsService service = new StatsService();
+        StatisticsService service = new StatisticsService();
         for (ForwardingStats stats : statsList) {
             service.add(stats);
         }
@@ -56,7 +51,7 @@ class StatsServiceTest {
     @MethodSource("showStatsCases")
     void showEmptyStatsAfterSecondShow(List<ForwardingStats> statsList) throws IOException {
         //given
-        StatsService service = new StatsService();
+        StatisticsService service = new StatisticsService();
         for (ForwardingStats stats : statsList) {
             service.add(stats);
         }

@@ -1,7 +1,7 @@
 package org.faust.config;
 
-import org.faust.file.WSService;
-import org.faust.listeners.ListenerService;
+import org.faust.wireshark.WiresharkService;
+import org.faust.forwarding.ListenerService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -10,16 +10,16 @@ import org.springframework.stereotype.Service;
 public class RunAfterEvent {
 
     private final ListenerService listenerService;
-    private final WSService wsService;
+    private final WiresharkService wiresharkService;
 
-    public RunAfterEvent(ListenerService listenerService, WSService wsService) {
+    public RunAfterEvent(ListenerService listenerService, WiresharkService wiresharkService) {
         this.listenerService = listenerService;
-        this.wsService = wsService;
+        this.wiresharkService = wiresharkService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
-        wsService.processEvents();
+        wiresharkService.processEvents();
         listenerService.startListeners();
     }
 }

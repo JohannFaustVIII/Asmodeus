@@ -1,7 +1,6 @@
-package org.faust.stats;
+package org.faust.wireshark;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.faust.file.WSService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,22 +12,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
-public class StatsController {
+public class WiresharkController {
 
-    private final WSService wsService;
+    private final WiresharkService wiresharkService;
 
-    public StatsController(WSService wsService) {
-        this.wsService = wsService;
-    }
-
-    @GetMapping("/")
-    public String getTestMessage() {
-        return "Hello World!";
+    public WiresharkController(WiresharkService wiresharkService) {
+        this.wiresharkService = wiresharkService;
     }
 
     @GetMapping("/ws/file")
     public ResponseEntity<?> getWsFile(HttpServletResponse response) throws IOException {
-        InputStream inStream = new FileInputStream(wsService.getWsFile());
+        InputStream inStream = new FileInputStream(wiresharkService.getWsFile());
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
     }

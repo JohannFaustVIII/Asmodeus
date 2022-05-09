@@ -1,7 +1,8 @@
 package org.faust.listeners.forwarding;
 
-import org.faust.file.WSService;
-import org.faust.stats.StatsService;
+import org.faust.forwarding.ForwardingStream;
+import org.faust.wireshark.WiresharkService;
+import org.faust.statistics.StatisticsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,14 +22,14 @@ import java.util.stream.Stream;
 class ForwardingStreamTest {
 
     @Mock
-    private static StatsService mockedStats;
+    private static StatisticsService mockedStats;
     @Mock
-    private static WSService wsService;
+    private static WiresharkService wiresharkService;
 
     @BeforeAll
     static void setUp() {
-        mockedStats = Mockito.mock(StatsService.class);
-        wsService = Mockito.mock(WSService.class);
+        mockedStats = Mockito.mock(StatisticsService.class);
+        wiresharkService = Mockito.mock(WiresharkService.class);
     }
 
     @ParameterizedTest(name = "forwardBytes: {0}")
@@ -43,7 +44,7 @@ class ForwardingStreamTest {
                 .inputStream(inStream)
                 .outputStream(outStream)
                 .statsService(mockedStats)
-                .wsService(wsService)
+                .wsService(wiresharkService)
                 .build();
 
         //when
@@ -64,7 +65,7 @@ class ForwardingStreamTest {
                 .inputStream(inStream)
                 .outputStream(outStream)
                 .statsService(mockedStats)
-                .wsService(wsService)
+                .wsService(wiresharkService)
                 .build();
 
         //when
