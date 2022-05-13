@@ -5,6 +5,7 @@ import org.faust.statistics.StatisticsService;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Phaser;
 
 public class Forwarder {
@@ -38,7 +39,7 @@ public class Forwarder {
 
     public void startForwarding() {
         Phaser phaser = new Phaser();
-        Thread t1 = new Thread(new ForwardingStream.ForwardingStreamBuilder()
+        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
                 .inputStream(inInputStream)
                 .outputStream(outOutputStream)
@@ -48,8 +49,10 @@ public class Forwarder {
                 .outIp(outIp)
                 .inPort(inPort)
                 .outPort(outPort)
-                .build());
-        Thread t2 = new Thread(new ForwardingStream.ForwardingStreamBuilder()
+                .build()).thenRun(() -> {
+                    // deregister
+        });
+        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)
@@ -59,9 +62,9 @@ public class Forwarder {
                 .outIp(outIp)
                 .inPort(outPort)
                 .outPort(inPort)
-                .build());
-        t1.start();
-        t2.start();
+                .build()).thenRun(() -> {
+                    // deregister
+        });
     }
 
     public static class ForwarderBuilder {

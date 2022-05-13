@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
@@ -14,6 +16,8 @@ import java.util.concurrent.SynchronousQueue;
 public class WiresharkService {
 
     private final BlockingQueue<WiresharkForwardEvent> queue = new SynchronousQueue<>(false);
+
+    private final List<WiresharkEventHandler> eventHandlers = new ArrayList<>();
 
     private final EnvironmentService envService;
 
@@ -55,5 +59,19 @@ public class WiresharkService {
 
     public File getWsFile() {
         return wiresharkFileWriter.getFile();
+    }
+
+    public WiresharkEventHandler getHandler() {
+        synchronized (eventHandlers) {
+            WiresharkEventHandler eventHandler = new WiresharkEventHandler(this::deregister);
+            eventHandlers.add(eventHandler);
+            return eventHandler;
+        }
+    }
+
+    public void deregister(WiresharkEventHandler eventHandler) {
+        synchronized (eventHandlers) {
+            eventHandlers.remove(eventHandler);
+        }
     }
 }
