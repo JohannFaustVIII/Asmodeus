@@ -30,7 +30,8 @@ public class EnvironmentService {
             return Arrays.asList(new ForwardConfig(
                     getInputPort(),
                     getOutputPort(),
-                    getOutIP()
+                    getOutIP(),
+                    getPacketsCount()
             ));
         }
     }
@@ -49,6 +50,10 @@ public class EnvironmentService {
 
     public int getHttpPort() {
         return getEnvInt("ASMO_HTTP_PORT", 8080);
+    }
+
+    public int getPacketsCount() {
+        return getEnvInt("ASMO_PACKET_COUNT", 1000);
     }
 
     private String getConfigFile() {

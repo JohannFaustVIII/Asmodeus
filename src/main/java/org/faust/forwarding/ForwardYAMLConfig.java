@@ -1,7 +1,5 @@
 package org.faust.forwarding;
 
-import org.faust.forwarding.ForwardConfig;
-
 import java.util.List;
 
 public class ForwardYAMLConfig {
