@@ -15,7 +15,7 @@ import java.util.concurrent.SynchronousQueue;
 @Service
 public class WiresharkService {
 
-    private final BlockingQueue<WiresharkForwardEvent> queue = new SynchronousQueue<>(false);
+    private final BlockingQueue<WiresharkForwardEvent> queue = new SynchronousQueue<>(false); //this is incorrect to what we want to achieve, use ConcurrentLinkedQueue (add and poll)
 
     private final List<WiresharkEventHandler> eventHandlers = new ArrayList<>();
 
