@@ -9,13 +9,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class WiresharkService {
 
-    private final BlockingQueue<WiresharkForwardEvent> queue = new SynchronousQueue<>(false); //this is incorrect to what we want to achieve, use ConcurrentLinkedQueue (add and poll)
+    private final Queue<WiresharkForwardEvent> queue = new ConcurrentLinkedQueue<>();
 
     private final List<WiresharkEventHandler> eventHandlers = new ArrayList<>();
 
@@ -34,11 +34,11 @@ public class WiresharkService {
     }
 
     public void addForwarderBytes(WiresharkForwardEvent event) {
-        queue.offer(event);
+        queue.add(event);
     }
 
     public WiresharkForwardEvent getEvent() throws InterruptedException {
-        return queue.take();
+        return queue.poll();
     }
 
     public void processEvents() {
@@ -47,7 +47,7 @@ public class WiresharkService {
             while (true) {
                 WiresharkForwardEvent event = null;
                 try {
-                    event = getEvent();
+                    while ((event = getEvent()) == null); // would be better to have it blocking?
                     wiresharkFileWriter.saveTokenToFile(new DataToken(event));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
