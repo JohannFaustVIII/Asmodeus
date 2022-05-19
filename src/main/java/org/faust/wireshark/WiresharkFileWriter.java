@@ -40,4 +40,15 @@ public class WiresharkFileWriter {
         return outputFile;
     }
 
+    public void resetFile() {
+        try {
+            outputStream.close();
+            outputStream = new FileOutputStream(outputFile);
+            openFile();
+        } catch (IOException e) {
+            System.err.println("Exception during resetting file: " + e);
+            e.printStackTrace();
+        }
+    }
+
 }

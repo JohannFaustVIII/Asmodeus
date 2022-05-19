@@ -1,6 +1,10 @@
 package org.faust.wireshark;
 
+import org.faust.wireshark.token.DataToken;
+import org.faust.wireshark.token.Token;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,17 +18,27 @@ public class WiresharkEventContainer {
     private String firstFilePath;
     private String secondFilePath;
 
+    private final WiresharkFileWriter firstFileWriter;
+    private final WiresharkFileWriter secondFileWriter;
+
+    private boolean first = true;
+
     private final int counter;
     private final List<Integer> firstPacketSizes;
     private final List<Integer> secondPacketSizes;
 
-    public WiresharkEventContainer(int counter) {
+    public WiresharkEventContainer(int counter) throws FileNotFoundException {
         this.counter = counter;
         firstPacketSizes = new ArrayList<>(counter);
         secondPacketSizes = new ArrayList<>(counter);
 
         String path = generateUniquePath();
         generateUniqueFiles(path);
+
+        firstFileWriter = new WiresharkFileWriter(firstFilePath);
+        secondFileWriter = new WiresharkFileWriter(secondFilePath);
+        firstFileWriter.openFile();
+        secondFileWriter.openFile();
     }
 
     private String generateUniquePath() {
@@ -47,6 +61,24 @@ public class WiresharkEventContainer {
         } while (firstPath.equals(secondPath));
         firstFilePath = firstPath;
         secondFilePath = secondPath;
+    }
+
+    public void addEvent(WiresharkForwardEvent event) {
+        WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
+        List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
+
+        Token token = new DataToken(event);
+        current.saveTokenToFile(token);
+        currentList.add(token.toBytes().length);
+
+        if (currentList.size() == counter) {
+            WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
+            List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
+
+            another.resetFile();
+            anotherList.clear();
+            first = !first;
+        }
     }
 
     private static String getRandomString() {
