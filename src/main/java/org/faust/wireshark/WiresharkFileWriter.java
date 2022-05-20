@@ -51,4 +51,22 @@ public class WiresharkFileWriter {
         }
     }
 
+    public byte[] readLastBytes(int count) {
+        try {
+            try (RandomAccessFile readFile = new RandomAccessFile(outputFile, "r")) {
+                byte[] result = new byte[count];
+                readFile.seek(outputFile.length() - count);
+                readFile.read(result, 0, count);
+                return result;
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Exception with finding file during reading last bytes: " + e);
+            e.printStackTrace();
+            return new byte[0];
+        } catch (IOException e) {
+            System.err.println("Exception during reading last bytes: " + e);
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
 }

@@ -26,6 +26,7 @@ public class WiresharkEventContainer {
     private final int counter;
     private final List<Integer> firstPacketSizes;
     private final List<Integer> secondPacketSizes;
+    private Object lock = new Object();
 
     public WiresharkEventContainer(int counter) throws FileNotFoundException {
         this.counter = counter;
@@ -64,20 +65,44 @@ public class WiresharkEventContainer {
     }
 
     public void addEvent(WiresharkForwardEvent event) {
-        WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
-        List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
+        synchronized (lock) {
+            WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
+            List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
 
-        Token token = new DataToken(event);
-        current.saveTokenToFile(token);
-        currentList.add(token.toBytes().length);
+            Token token = new DataToken(event);
+            current.saveTokenToFile(token);
+            currentList.add(token.toBytes().length);
 
-        if (currentList.size() == counter) {
+            if (currentList.size() == counter) {
+                WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
+                List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
+
+                another.resetFile();
+                anotherList.clear();
+                first = !first;
+            }
+        }
+    }
+
+    public byte[] getPacketBytes() {
+        synchronized (lock) {
+            WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
+            List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
             WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
             List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
 
-            another.resetFile();
-            anotherList.clear();
-            first = !first;
+            int currentCount = currentList.size();
+            int anotherCount = Math.min(counter - currentCount, anotherList.size());
+
+            int currentBytesToRead = currentList.stream().mapToInt(Integer::valueOf).sum();
+            int anotherBytesToRead = anotherList.stream().mapToInt(Integer::valueOf).skip(anotherList.size() - anotherCount).sum();
+
+            byte[] result = new byte[currentBytesToRead + anotherBytesToRead];
+
+            System.arraycopy(current.readLastBytes(currentBytesToRead), 0, result, 0, currentBytesToRead);
+            System.arraycopy(another.readLastBytes(anotherBytesToRead), 0, result, currentBytesToRead, anotherBytesToRead);
+
+            return result;
         }
     }
 
