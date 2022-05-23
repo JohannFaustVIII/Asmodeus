@@ -1,6 +1,8 @@
 package org.faust.wireshark;
 
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -15,7 +17,12 @@ public class WiresharkEventHandler {
 
     private final Consumer<WiresharkEventHandler> endAction;
 
-    WiresharkEventHandler(Consumer<WiresharkEventHandler> endAction) {
+    private final Executor executor = Executors.newSingleThreadExecutor();
+
+    private final WiresharkEventContainer eventContainer;
+
+    WiresharkEventHandler(int counter, Consumer<WiresharkEventHandler> endAction) {
+        this.eventContainer = new WiresharkEventContainer(counter);
         this.endAction = Objects.requireNonNull(endAction);
     }
 
@@ -24,10 +31,15 @@ public class WiresharkEventHandler {
     }
 
     public void addEvent(WiresharkForwardEvent event) {
+        executor.execute(() -> eventContainer.addEvent(event));
         /**
          * Create two files, and put bytes in one of them, if finished, switch to another, if another is full, clean previous. Repeat.
          * When getting to read, join them, but read all from actual, and put as many as needed from previous, to fulfill counter.
          * This is slow, needs thread pool to put bytes in container, or it's gonna slow forwarder.
          */
+    }
+
+    public byte[] getBytes() {
+        return eventContainer.getPacketBytes();
     }
 }

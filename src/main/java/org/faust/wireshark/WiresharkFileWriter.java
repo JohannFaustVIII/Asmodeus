@@ -26,14 +26,17 @@ public class WiresharkFileWriter {
     }
 
     public void saveTokenToFile(Token token) {
+        writeBytes(token.toBytes());
+    }
+
+    public void writeBytes(byte[] bytes) {
         try {
-            outputStream.write(token.toBytes());
+            outputStream.write(bytes);
             outputStream.flush();
         } catch (IOException e) {
-            System.err.println("Exception during writing token to file: " + e);
+            System.err.println("Exception during writing bytes to file: " + e);
             e.printStackTrace();
         }
-
     }
 
     public File getFile() {
@@ -67,6 +70,14 @@ public class WiresharkFileWriter {
             System.err.println("Exception during reading last bytes: " + e);
             e.printStackTrace();
             return new byte[0];
+        }
+    }
+
+    public void closeFile() { //TODO: REFACTOR
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -2,9 +2,12 @@ forwarders:
   - inputPort: 8901
     outputPort: 5432
     outputIp: 'postgres_db'
+    packetsCount: 100
   - inputPort: 8902
     outputPort: 5432
     outputIp: 'postgres_db'
+    packetsCount: 100
   - inputPort: 8903
     outputPort: 5432
     outputIp: 'postgres_db'
+    packetsCount: 100

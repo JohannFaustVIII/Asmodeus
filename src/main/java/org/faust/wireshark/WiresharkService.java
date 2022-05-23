@@ -57,13 +57,24 @@ public class WiresharkService {
         }).start();
     }
 
-    public File getWsFile() {
+    public File getWsFile() { //TODO: REFACTOR
+        WiresharkFileWriter wiresharkFileWriter = null;
+        try {
+            wiresharkFileWriter = new WiresharkFileWriter("result");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        wiresharkFileWriter.openFile();
+        for (WiresharkEventHandler eventHandler : eventHandlers) {
+            wiresharkFileWriter.writeBytes(eventHandler.getBytes());
+        }
+        wiresharkFileWriter.closeFile();
         return wiresharkFileWriter.getFile();
     }
 
-    public WiresharkEventHandler getHandler() {
+    public WiresharkEventHandler getHandler(int count) {
         synchronized (eventHandlers) {
-            WiresharkEventHandler eventHandler = new WiresharkEventHandler(this::deregister);
+            WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, this::deregister);
             eventHandlers.add(eventHandler);
             return eventHandler;
         }

@@ -18,8 +18,8 @@ public class WiresharkEventContainer {
     private String firstFilePath;
     private String secondFilePath;
 
-    private final WiresharkFileWriter firstFileWriter;
-    private final WiresharkFileWriter secondFileWriter;
+    private WiresharkFileWriter firstFileWriter;
+    private WiresharkFileWriter secondFileWriter;
 
     private boolean first = true;
 
@@ -28,7 +28,8 @@ public class WiresharkEventContainer {
     private final List<Integer> secondPacketSizes;
     private Object lock = new Object();
 
-    public WiresharkEventContainer(int counter) throws FileNotFoundException {
+    public WiresharkEventContainer(int counter) {
+        startCatalog();
         this.counter = counter;
         firstPacketSizes = new ArrayList<>(counter);
         secondPacketSizes = new ArrayList<>(counter);
@@ -36,10 +37,23 @@ public class WiresharkEventContainer {
         String path = generateUniquePath();
         generateUniqueFiles(path);
 
-        firstFileWriter = new WiresharkFileWriter(firstFilePath);
-        secondFileWriter = new WiresharkFileWriter(secondFilePath);
-        firstFileWriter.openFile();
-        secondFileWriter.openFile();
+        try {
+            firstFileWriter = new WiresharkFileWriter(firstFilePath);
+            secondFileWriter = new WiresharkFileWriter(secondFilePath);
+            firstFileWriter.openFile();
+            secondFileWriter.openFile();
+        } catch (FileNotFoundException ex) {
+            System.err.println("WiresharkEventContainer didn't find a file, ex: " + ex);
+            ex.printStackTrace();
+        }
+    }
+
+    private void startCatalog() {
+        synchronized (CATALOG) {
+            if (!Files.exists(Paths.get(CATALOG))) {
+                new File(CATALOG).mkdir();
+            }
+        }
     }
 
     private String generateUniquePath() {
@@ -73,7 +87,7 @@ public class WiresharkEventContainer {
             current.saveTokenToFile(token);
             currentList.add(token.toBytes().length);
 
-            if (currentList.size() == counter) {
+            if (currentList.size() >= counter) {
                 WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
                 List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
 

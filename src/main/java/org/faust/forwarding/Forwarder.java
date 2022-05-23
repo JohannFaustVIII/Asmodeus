@@ -1,6 +1,6 @@
 package org.faust.forwarding;
 
-import org.faust.wireshark.WiresharkService;
+import org.faust.wireshark.WiresharkEventHandler;
 import org.faust.statistics.StatisticsService;
 
 import java.io.InputStream;
@@ -15,7 +15,7 @@ public class Forwarder {
     private final InputStream outInputStream;
     private final OutputStream outOutputStream;
     private final StatisticsService statisticsService;
-    private final WiresharkService wiresharkService;
+    private final WiresharkEventHandler wiresharkEventHandler;
     private final String outIp;
     private final String inIp;
     private final int outPort;
@@ -29,7 +29,7 @@ public class Forwarder {
         outOutputStream = builder.outOutputStream;
 
         this.statisticsService = builder.statisticsService;
-        this.wiresharkService = builder.wiresharkService;
+        this.wiresharkEventHandler = builder.wiresharkEventHandler;
         this.outIp = builder.outIp;
         this.inIp = builder.inIp;
 
@@ -44,7 +44,7 @@ public class Forwarder {
                 .inputStream(inInputStream)
                 .outputStream(outOutputStream)
                 .statsService(statisticsService)
-                .wsService(wiresharkService)
+                .wsEventHandler(wiresharkEventHandler)
                 .inIp(inIp)
                 .outIp(outIp)
                 .inPort(inPort)
@@ -57,7 +57,7 @@ public class Forwarder {
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)
                 .statsService(statisticsService)
-                .wsService(wiresharkService)
+                .wsEventHandler(wiresharkEventHandler)
                 .inIp(inIp)
                 .outIp(outIp)
                 .inPort(outPort)
@@ -73,7 +73,7 @@ public class Forwarder {
         private InputStream outInputStream;
         private OutputStream outOutputStream;
         private StatisticsService statisticsService;
-        private WiresharkService wiresharkService;
+        private WiresharkEventHandler wiresharkEventHandler;
         private String outIp;
         private String inIp;
         private int outPort;
@@ -104,8 +104,8 @@ public class Forwarder {
             return this;
         }
 
-        public ForwarderBuilder wsService(WiresharkService wiresharkService) {
-            this.wiresharkService = wiresharkService;
+        public ForwarderBuilder wsEventHandler(WiresharkEventHandler wiresharkEventHandler) {
+            this.wiresharkEventHandler = wiresharkEventHandler;
             return this;
         }
 

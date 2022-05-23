@@ -1,5 +1,6 @@
 package org.faust.forwarding;
 
+import org.faust.wireshark.WiresharkEventHandler;
 import org.faust.wireshark.WiresharkService;
 import org.faust.statistics.StatisticsService;
 
@@ -13,14 +14,14 @@ public class Listener {
     private final int outputPort;
     private final String outIp;
     private final StatisticsService statisticsService;
-    private final WiresharkService wiresharkService;
+    private final WiresharkEventHandler wiresharkEventHandler;
 
     private Listener(ListenerBuilder builder) {
         this.inputPort = builder.inputPort;
         this.outputPort = builder.outputPort;
         this.outIp = builder.outIp;
         this.statisticsService = builder.statisticsService;
-        this.wiresharkService = builder.wiresharkService;
+        this.wiresharkEventHandler = builder.wiresharkService.getHandler(builder.count);
     }
 
     public void listen() throws IOException {
@@ -39,7 +40,7 @@ public class Listener {
                     .outInputStream(outSocket.getInputStream())
                     .outOutputStream(outSocket.getOutputStream())
                     .statsService(statisticsService)
-                    .wsService(wiresharkService)
+                    .wsEventHandler(wiresharkEventHandler)
                     .outIp(outIp)
                     .inIp(socket.getInetAddress().getHostAddress())
                     .outPort(outSocket.getPort())
@@ -56,6 +57,7 @@ public class Listener {
         private String outIp;
         private StatisticsService statisticsService;
         private WiresharkService wiresharkService;
+        private int count;
 
         public ListenerBuilder inputPort(int inputPort) {
             this.inputPort = inputPort;
@@ -79,6 +81,11 @@ public class Listener {
 
         public ListenerBuilder wsService(WiresharkService wiresharkService) {
             this.wiresharkService = wiresharkService;
+            return this;
+        }
+
+        public ListenerBuilder count(int count) {
+            this.count = count;
             return this;
         }
 
