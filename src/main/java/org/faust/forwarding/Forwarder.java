@@ -50,7 +50,7 @@ public class Forwarder {
                 .inPort(inPort)
                 .outPort(outPort)
                 .build()).thenRun(() -> {
-                    // deregister
+                    // TODO: deregister
         });
         CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
@@ -58,12 +58,12 @@ public class Forwarder {
                 .outputStream(inOutputStream)
                 .statsService(statisticsService)
                 .wsEventHandler(wiresharkEventHandler)
-                .inIp(inIp)
-                .outIp(outIp)
+                .inIp(outIp)
+                .outIp(inIp)
                 .inPort(outPort)
                 .outPort(inPort)
                 .build()).thenRun(() -> {
-                    // deregister
+                    // TODO: deregister
         });
     }
 
