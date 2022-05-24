@@ -108,13 +108,13 @@ public class WiresharkEventContainer {
             int currentCount = currentList.size();
             int anotherCount = Math.min(counter - currentCount, anotherList.size());
 
-            int currentBytesToRead = currentList.stream().mapToInt(Integer::valueOf).sum();
             int anotherBytesToRead = anotherList.stream().mapToInt(Integer::valueOf).skip(anotherList.size() - anotherCount).sum();
+            int currentBytesToRead = currentList.stream().mapToInt(Integer::valueOf).sum();
 
-            byte[] result = new byte[currentBytesToRead + anotherBytesToRead];
+            byte[] result = new byte[anotherBytesToRead + currentBytesToRead];
 
-            System.arraycopy(current.readLastBytes(currentBytesToRead), 0, result, 0, currentBytesToRead);
-            System.arraycopy(another.readLastBytes(anotherBytesToRead), 0, result, currentBytesToRead, anotherBytesToRead);
+            System.arraycopy(another.readLastBytes(anotherBytesToRead), 0, result, 0, anotherBytesToRead);
+            System.arraycopy(current.readLastBytes(currentBytesToRead), 0, result, anotherBytesToRead, currentBytesToRead);
 
             return result;
         }
