@@ -80,30 +80,40 @@ public class WiresharkEventContainer {
 
     public void addEvent(WiresharkForwardEvent event) {
         synchronized (lock) {
-            WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
-            List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
-
             Token token = new DataToken(event);
-            current.saveTokenToFile(token);
-            currentList.add(token.toBytes().length);
+            putTokenInFile(token);
+            saveTokenSize(token);
+            switchFileIfNeeded();
+        }
+    }
 
-            if (currentList.size() >= counter) {
-                WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
-                List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
+    private void putTokenInFile(Token token) {
+        WiresharkFileWriter current = getPrimaryFileWriter();
+        current.saveTokenToFile(token);
+    }
 
-                another.resetFile();
-                anotherList.clear();
-                first = !first;
-            }
+    private void saveTokenSize(Token token) {
+        List<Integer> currentList = getPrimaryByteCountList();
+        currentList.add(token.toBytes().length);
+    }
+
+    private void switchFileIfNeeded() {
+        if (getPrimaryByteCountList().size() >= counter) {
+            WiresharkFileWriter another = getSecondaryFileWriter();
+            List<Integer> anotherList = getSecondaryByteCountList();
+
+            another.resetFile();
+            anotherList.clear();
+            first = !first;
         }
     }
 
     public byte[] getPacketBytes() {
         synchronized (lock) {
-            WiresharkFileWriter current = first ? firstFileWriter : secondFileWriter;
-            List<Integer> currentList = first ? firstPacketSizes : secondPacketSizes;
-            WiresharkFileWriter another = !first ? firstFileWriter : secondFileWriter;
-            List<Integer> anotherList = !first ? firstPacketSizes : secondPacketSizes;
+            WiresharkFileWriter current = getPrimaryFileWriter();
+            List<Integer> currentList = getPrimaryByteCountList();
+            WiresharkFileWriter another = getSecondaryFileWriter();
+            List<Integer> anotherList = getSecondaryByteCountList();
 
             int currentCount = currentList.size();
             int anotherCount = Math.min(counter - currentCount, anotherList.size());
@@ -118,6 +128,22 @@ public class WiresharkEventContainer {
 
             return result;
         }
+    }
+
+    private WiresharkFileWriter getPrimaryFileWriter() {
+        return first ? firstFileWriter : secondFileWriter;
+    }
+
+    private List<Integer> getPrimaryByteCountList() {
+        return first ? firstPacketSizes : secondPacketSizes;
+    }
+
+    private WiresharkFileWriter getSecondaryFileWriter() {
+        return !first ? firstFileWriter : secondFileWriter;
+    }
+
+    private List<Integer> getSecondaryByteCountList() {
+        return !first ? firstPacketSizes : secondPacketSizes;
     }
 
     private static String getRandomString() {
