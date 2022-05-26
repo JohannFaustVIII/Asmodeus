@@ -45,4 +45,20 @@ public class ConvertUtils {
 
         return result;
     }
+
+    public static int toInt(byte[] input) {
+        //TODO: exception if array's length is different than 4
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            value += ((int)input[i]) >> (i*8);
+        }
+        return value;
+    }
+
+    public static byte[] subArray(byte[] src, int start, int end) {
+        int length = end - start; //TODO: add exception about invalid if negative
+        byte[] result = new byte[length];
+        System.arraycopy(src, start, result, 0, length);
+        return result;
+    }
 }
