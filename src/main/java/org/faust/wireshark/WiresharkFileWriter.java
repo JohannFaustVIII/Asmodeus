@@ -73,10 +73,11 @@ public class WiresharkFileWriter {
         }
     }
 
-    public void closeFile() { //TODO: REFACTOR
+    public void closeFile() {
         try {
             outputStream.close();
         } catch (IOException e) {
+            System.err.println("Exception during closing file: " + e);
             e.printStackTrace();
         }
     }
