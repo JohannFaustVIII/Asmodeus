@@ -50,15 +50,15 @@ public class ConvertUtils {
         //TODO: exception if array's length is different than 4
         int value = 0;
         for (int i = 0; i < 4; i++) {
-            value += ((int)input[i]) >> (i*8);
+            int b = input[i] & 0xff;
+            value += b << (i*8);
         }
         return value;
     }
 
-    public static byte[] subArray(byte[] src, int start, int end) {
-        int length = end - start; //TODO: add exception about invalid if negative
-        byte[] result = new byte[length];
-        System.arraycopy(src, start, result, 0, length);
+    public static byte[] subArray(byte[] src, int start, int size) {
+        byte[] result = new byte[size];
+        System.arraycopy(src, start, result, 0, size);
         return result;
     }
 }

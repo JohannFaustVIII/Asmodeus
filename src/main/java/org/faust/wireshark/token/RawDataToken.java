@@ -11,7 +11,7 @@ public class RawDataToken {
 
     public RawDataToken(byte[] bytes) {
         this.seconds = ConvertUtils.toInt(ConvertUtils.subArray(bytes, 0, 4));
-        this.microseconds = ConvertUtils.toInt(ConvertUtils.subArray(bytes, 4, 8));
+        this.microseconds = ConvertUtils.toInt(ConvertUtils.subArray(bytes, 4, 4));
         this.bytes = bytes;
     }
 
@@ -20,12 +20,22 @@ public class RawDataToken {
 
         int offset = 0;
         while (offset < bytes.length) {
-            int size = ConvertUtils.toInt(ConvertUtils.subArray(bytes, offset + 8, offset + 12));
-            result.add(new RawDataToken(ConvertUtils.subArray(bytes, offset, offset + size + 16)));
-            offset += size;
+            int size = ConvertUtils.toInt(ConvertUtils.subArray(bytes, offset + 8, 4));
+            result.add(new RawDataToken(ConvertUtils.subArray(bytes, offset, size + 16)));
+            offset += size + 16;
         }
-
         return result;
     }
 
+    public int getSeconds() {
+        return seconds;
+    }
+
+    public int getMicroseconds() {
+        return microseconds;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
 }

@@ -1,10 +1,12 @@
 package org.faust.wireshark;
 
+import org.faust.wireshark.token.RawDataToken;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -22,9 +24,17 @@ public class WiresharkService {
             e.printStackTrace();
         }
         wiresharkFileWriter.openFile();
-        for (WiresharkEventHandler eventHandler : eventHandlers) {
-            wiresharkFileWriter.writeBytes(eventHandler.getBytes());
-        }
+
+        eventHandlers
+                .stream()
+                .map(WiresharkEventHandler::getBytes)
+                .flatMap(bytes -> RawDataToken.getTokens(bytes).stream())
+                .sorted(
+                        Comparator
+                                .comparingInt(RawDataToken::getSeconds)
+                                .thenComparingInt(RawDataToken::getMicroseconds))
+                .map(RawDataToken::getBytes)
+                .forEach(wiresharkFileWriter::writeBytes);
         wiresharkFileWriter.closeFile();
         return wiresharkFileWriter.getFile();
     }
