@@ -16,7 +16,13 @@ public class WiresharkService {
 
     public WiresharkService() {}
 
-    public File getWsFile() { //TODO: REFACTOR (need to map bytes to packets (flatMap), then sort by date, and then write)
+    public File getWsFile() {
+        WiresharkFileWriter wiresharkFileWriter = getNewWiresharkFileWriter();
+        writePacketsToFile(wiresharkFileWriter);
+        return getFinishedFile(wiresharkFileWriter);
+    }
+
+    private WiresharkFileWriter getNewWiresharkFileWriter() {
         WiresharkFileWriter wiresharkFileWriter = null;
         try {
             wiresharkFileWriter = new WiresharkFileWriter("result");
@@ -24,19 +30,28 @@ public class WiresharkService {
             e.printStackTrace();
         }
         wiresharkFileWriter.openFile();
+        return wiresharkFileWriter;
+    }
 
+    private void writePacketsToFile(WiresharkFileWriter wiresharkFileWriter) {
         eventHandlers
                 .stream()
                 .map(WiresharkEventHandler::getBytes)
                 .flatMap(bytes -> RawDataToken.getTokens(bytes).stream())
-                .sorted(
-                        Comparator
-                                .comparingInt(RawDataToken::getSeconds)
-                                .thenComparingInt(RawDataToken::getMicroseconds))
+                .sorted(getDateComparator())
                 .map(RawDataToken::getBytes)
                 .forEach(wiresharkFileWriter::writeBytes);
+    }
+
+    private File getFinishedFile(WiresharkFileWriter wiresharkFileWriter) {
         wiresharkFileWriter.closeFile();
         return wiresharkFileWriter.getFile();
+    }
+
+    private Comparator<RawDataToken> getDateComparator() {
+        return Comparator
+                .comparingInt(RawDataToken::getSeconds)
+                .thenComparingInt(RawDataToken::getMicroseconds);
     }
 
     public WiresharkEventHandler getHandler(int count) {
