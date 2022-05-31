@@ -47,7 +47,10 @@ public class ConvertUtils {
     }
 
     public static int toInt(byte[] input) {
-        //TODO: exception if array's length is different than 4
+        if (input.length != 4) {
+            throw new ConvertUtilsException("Input array length is different than 4");
+        }
+
         int value = 0;
         for (int i = 0; i < 4; i++) {
             int b = input[i] & 0xff;
@@ -60,5 +63,11 @@ public class ConvertUtils {
         byte[] result = new byte[size];
         System.arraycopy(src, start, result, 0, size);
         return result;
+    }
+
+    private static class ConvertUtilsException extends RuntimeException {
+        public ConvertUtilsException(String message) {
+            super(message);
+        }
     }
 }
