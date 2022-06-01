@@ -16,7 +16,7 @@ public class WiresharkService {
 
     public WiresharkService() {}
 
-    public File getWsFile() {
+    public synchronized File getWsFile() {
         WiresharkFileWriter wiresharkFileWriter = getNewWiresharkFileWriter();
         writePacketsToFile(wiresharkFileWriter);
         return getFinishedFile(wiresharkFileWriter);
