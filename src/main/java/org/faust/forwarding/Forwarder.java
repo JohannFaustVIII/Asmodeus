@@ -49,9 +49,7 @@ public class Forwarder {
                 .outIp(outIp)
                 .inPort(inPort)
                 .outPort(outPort)
-                .build()).thenRun(() -> {
-                    // TODO: deregister
-        });
+                .build());
         CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
                 .inputStream(outInputStream)
@@ -62,9 +60,7 @@ public class Forwarder {
                 .outIp(inIp)
                 .inPort(outPort)
                 .outPort(inPort)
-                .build()).thenRun(() -> {
-                    // TODO: deregister
-        });
+                .build());
     }
 
     public static class ForwarderBuilder {

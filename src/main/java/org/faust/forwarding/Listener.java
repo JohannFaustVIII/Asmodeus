@@ -21,7 +21,7 @@ public class Listener {
         this.outputPort = builder.outputPort;
         this.outIp = builder.outIp;
         this.statisticsService = builder.statisticsService;
-        this.wiresharkEventHandler = builder.wiresharkService.getHandler(builder.count);
+        this.wiresharkEventHandler = builder.wiresharkService.getHandler(builder.count); //TODO: think about removing/cleaning the handler?
     }
 
     public void listen() throws IOException {
