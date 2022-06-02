@@ -27,6 +27,7 @@ public class WiresharkService {
         try {
             wiresharkFileWriter = new WiresharkFileWriter("result");
         } catch (FileNotFoundException e) {
+            System.err.println("Exception when getting wireshark file: " + e);
             e.printStackTrace();
         }
         wiresharkFileWriter.openFile();
