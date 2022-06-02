@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,7 @@ public class StatisticsService {
 
     private final List<Statistics> stats = new ArrayList<>();
     private final List<Statistics> prometheusStats;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     public StatisticsService() {
         prometheusStats = Metrics.gauge("readBytes", Collections.emptyList(), new ArrayList<>(),
@@ -32,10 +34,14 @@ public class StatisticsService {
     }
 
     public void add(Statistics forwardingStats) {
-        synchronized (stats) {
-            stats.add(forwardingStats);
-            prometheusStats.add(forwardingStats);
-        }
+        executor.execute(() -> {
+            synchronized (stats) {
+                stats.add(forwardingStats);
+            }
+            synchronized (prometheusStats) {
+                prometheusStats.add(forwardingStats);
+            }
+        });
     }
 
     public void show() {
@@ -50,12 +56,14 @@ public class StatisticsService {
 
     @Scheduled(fixedRate = 1000)
     public void removePrometheusStats() {
-        List<Statistics> statsToRemove = prometheusStats.stream()
-                .filter(stat -> System.currentTimeMillis() - stat.getTimestamp() > 1000)
-                .collect(Collectors.toList());
-        prometheusStats.removeAll(statsToRemove);
-        if (statsToRemove.size() > 0) {
-            System.out.println("Removed " + statsToRemove.size() + " Prometheus stats");
+        synchronized (prometheusStats) {
+            List<Statistics> statsToRemove = prometheusStats.stream()
+                    .filter(stat -> System.currentTimeMillis() - stat.getTimestamp() > 1000)
+                    .collect(Collectors.toList());
+            prometheusStats.removeAll(statsToRemove);
+            if (statsToRemove.size() > 0) {
+                System.out.println("Removed " + statsToRemove.size() + " Prometheus stats");
+            }
         }
     }
 }
