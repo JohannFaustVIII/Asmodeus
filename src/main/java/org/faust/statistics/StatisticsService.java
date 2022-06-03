@@ -20,7 +20,8 @@ public class StatisticsService {
 
     private final List<Statistics> stats = new ArrayList<>();
     private final List<Statistics> prometheusStats;
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final Executor statsExecutor = Executors.newSingleThreadExecutor();
+    private final Executor prometheusExecutor = Executors.newSingleThreadExecutor();
 
     public StatisticsService() {
         prometheusStats = Metrics.gauge("readBytes", Collections.emptyList(), new ArrayList<>(),
@@ -34,10 +35,12 @@ public class StatisticsService {
     }
 
     public void add(Statistics forwardingStats) {
-        executor.execute(() -> {
+        statsExecutor.execute(() -> {
             synchronized (stats) {
                 stats.add(forwardingStats);
             }
+        });
+        prometheusExecutor.execute(() -> {
             synchronized (prometheusStats) {
                 prometheusStats.add(forwardingStats);
             }
