@@ -1,7 +1,6 @@
 package org.faust.forwarding;
 
 import org.faust.wireshark.WiresharkEventHandler;
-import org.faust.wireshark.WiresharkService;
 import org.faust.statistics.StatisticsService;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class Listener {
         this.outputPort = builder.outputPort;
         this.outIp = builder.outIp;
         this.statisticsService = builder.statisticsService;
-        this.wiresharkEventHandler = builder.wiresharkService.getHandler(builder.count); //TODO: think about removing/cleaning the handler?
+        this.wiresharkEventHandler = builder.wiresharkEventHandler; //TODO: think about removing/cleaning the handler?
     }
 
     public void listen() throws IOException {
@@ -56,7 +55,7 @@ public class Listener {
         private int outputPort;
         private String outIp;
         private StatisticsService statisticsService;
-        private WiresharkService wiresharkService;
+        private WiresharkEventHandler wiresharkEventHandler;
         private int count;
 
         public ListenerBuilder inputPort(int inputPort) {
@@ -79,8 +78,8 @@ public class Listener {
             return this;
         }
 
-        public ListenerBuilder wsService(WiresharkService wiresharkService) {
-            this.wiresharkService = wiresharkService;
+        public ListenerBuilder wsHandler(WiresharkEventHandler wiresharkEventHandler) {
+            this.wiresharkEventHandler = wiresharkEventHandler;
             return this;
         }
 
