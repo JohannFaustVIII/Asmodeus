@@ -38,7 +38,11 @@ public class WiresharkService {
         eventHandlers
                 .stream()
                 .map(WiresharkEventHandler::getBytes)
+                // TODO: make WiresharkEventHandler to return tokens, and make a separate filter time?
+                // and then can remove packets
                 .flatMap(bytes -> RawDataToken.getTokens(bytes).stream())
+                // here add filter to remove older packets
+                // may be worth to remove them completely?
                 .sorted(getDateComparator())
                 .map(RawDataToken::getBytes)
                 .forEach(wiresharkFileWriter::writeBytes);
