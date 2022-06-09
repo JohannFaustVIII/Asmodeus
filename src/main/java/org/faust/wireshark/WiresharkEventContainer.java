@@ -24,13 +24,15 @@ public class WiresharkEventContainer {
     private boolean first = true;
 
     private final int counter;
+    private final int packetAge;
     private final List<Integer> firstPacketSizes;
     private final List<Integer> secondPacketSizes;
     private Object lock = new Object();
 
-    public WiresharkEventContainer(int counter) {
+    public WiresharkEventContainer(int counter, int packetAge) {
         startCatalog();
         this.counter = counter;
+        this.packetAge = packetAge;
         firstPacketSizes = new ArrayList<>(counter);
         secondPacketSizes = new ArrayList<>(counter);
 
@@ -108,7 +110,7 @@ public class WiresharkEventContainer {
         }
     }
 
-    public byte[] getPacketBytes() {
+    public byte[] getPacketBytes() { //TODO: return packets here and filter by time
         synchronized (lock) {
             WiresharkFileWriter current = getPrimaryFileWriter();
             List<Integer> currentList = getPrimaryByteCountList();

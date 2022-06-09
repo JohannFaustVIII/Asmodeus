@@ -31,7 +31,8 @@ public class EnvironmentService {
                     getInputPort(),
                     getOutputPort(),
                     getOutIP(),
-                    getPacketsCount()
+                    getPacketsCount(),
+                    getPacketAge()
             ));
         }
     }
@@ -54,6 +55,10 @@ public class EnvironmentService {
 
     public int getPacketsCount() {
         return getEnvInt("ASMO_PACKET_COUNT", 1000);
+    }
+
+    public int getPacketAge() {
+        return getEnvInt("ASMO_PACKET_AGE", 60);
     }
 
     private String getConfigFile() {

@@ -21,8 +21,8 @@ public class WiresharkEventHandler {
 
     private final WiresharkEventContainer eventContainer;
 
-    WiresharkEventHandler(int counter, Consumer<WiresharkEventHandler> endAction) {
-        this.eventContainer = new WiresharkEventContainer(counter);
+    WiresharkEventHandler(int counter, int packetAge, Consumer<WiresharkEventHandler> endAction) {
+        this.eventContainer = new WiresharkEventContainer(counter, packetAge);
         this.endAction = Objects.requireNonNull(endAction);
     }
 

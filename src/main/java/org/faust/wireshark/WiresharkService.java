@@ -59,9 +59,9 @@ public class WiresharkService {
                 .thenComparingInt(RawDataToken::getMicroseconds);
     }
 
-    public WiresharkEventHandler getHandler(int count) {
+    public WiresharkEventHandler getHandler(int count, int packetAge) {
         synchronized (eventHandlers) {
-            WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, this::deregister);
+            WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, packetAge, this::deregister);
             eventHandlers.add(eventHandler);
             return eventHandler;
         }
