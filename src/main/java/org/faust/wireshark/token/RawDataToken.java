@@ -38,4 +38,8 @@ public class RawDataToken {
     public byte[] getBytes() {
         return bytes;
     }
+
+    public long getTime() {
+        return 1_000L*seconds + microseconds;
+    }
 }

@@ -14,8 +14,8 @@ public class DataToken implements Token {
     private final TCPToken tcpToken;
 
     public DataToken(WiresharkForwardEvent event) {
-        this.seconds = (int) (event.getTimestamp() / 1_000_000);
-        this.microseconds = (int) (event.getTimestamp() % 1_000_000);
+        this.seconds = (int) (event.getTimestamp() / 1_000);
+        this.microseconds = (int) (event.getTimestamp() % 1_000);
         this.tcpToken = new TCPToken(event.getInIP(), event.getOutIP(), event.getInPort(), event.getOutPort(), event.getBytes());
         this.capturedPacketLength = this.tcpToken.size();
         this.originalPacketLength = this.tcpToken.size();

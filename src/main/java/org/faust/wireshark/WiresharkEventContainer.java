@@ -1,6 +1,7 @@
 package org.faust.wireshark;
 
 import org.faust.wireshark.token.DataToken;
+import org.faust.wireshark.token.RawDataToken;
 import org.faust.wireshark.token.Token;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class WiresharkEventContainer {
 
@@ -110,7 +112,7 @@ public class WiresharkEventContainer {
         }
     }
 
-    public byte[] getPacketBytes() { //TODO: return packets here and filter by time
+    public List<RawDataToken> getRawPackets() {
         synchronized (lock) {
             WiresharkFileWriter current = getPrimaryFileWriter();
             List<Integer> currentList = getPrimaryByteCountList();
@@ -128,7 +130,14 @@ public class WiresharkEventContainer {
             System.arraycopy(another.readLastBytes(anotherBytesToRead), 0, result, 0, anotherBytesToRead);
             System.arraycopy(current.readLastBytes(currentBytesToRead), 0, result, anotherBytesToRead, currentBytesToRead);
 
-            return result;
+            long time = System.currentTimeMillis();
+            long age = 1_000L * packetAge;
+
+            return RawDataToken
+                    .getTokens(result)
+                    .stream()
+                    .filter(packet -> time - packet.getTime() <= age)
+                    .collect(Collectors.toList());
         }
     }
 

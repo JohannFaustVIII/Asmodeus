@@ -1,5 +1,8 @@
 package org.faust.wireshark;
 
+import org.faust.wireshark.token.RawDataToken;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -34,7 +37,7 @@ public class WiresharkEventHandler {
         executor.execute(() -> eventContainer.addEvent(event));
     }
 
-    public byte[] getBytes() {
-        return eventContainer.getPacketBytes();
+    public List<RawDataToken> getRawPackets() {
+        return eventContainer.getRawPackets();
     }
 }
