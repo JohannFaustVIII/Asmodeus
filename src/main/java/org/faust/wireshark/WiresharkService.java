@@ -22,6 +22,11 @@ public class WiresharkService {
         return getFinishedFile(wiresharkFileWriter);
     }
 
+    // how to get ws file for single handler?
+    // change eventHandlers to map, and read proper handler
+    // don't sort and done
+    // and add to configuration its name?
+
     private WiresharkFileWriter getNewWiresharkFileWriter() {
         WiresharkFileWriter wiresharkFileWriter = null;
         try {
@@ -54,7 +59,7 @@ public class WiresharkService {
                 .thenComparingInt(RawDataToken::getMicroseconds);
     }
 
-    public WiresharkEventHandler getHandler(int count, int packetAge) {
+    public WiresharkEventHandler getHandler(int count, int packetAge) { //TODO: name has to be passed here, name has to be in configuration then
         synchronized (eventHandlers) {
             WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, packetAge, this::deregister);
             eventHandlers.add(eventHandler);
