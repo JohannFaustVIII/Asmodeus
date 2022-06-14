@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class WiresharkService {
 
-    private final List<WiresharkEventHandler> eventHandlers = new ArrayList<>();
+    private final Map<String, WiresharkEventHandler> eventHandlers = new HashMap<>();
 
     public WiresharkService() {}
 
@@ -41,6 +41,7 @@ public class WiresharkService {
 
     private void writePacketsToFile(WiresharkFileWriter wiresharkFileWriter) {
         eventHandlers
+                .values()
                 .stream()
                 .flatMap(handler -> handler.getRawPackets().stream())
                 .sorted(getDateComparator())
@@ -59,10 +60,11 @@ public class WiresharkService {
                 .thenComparingInt(RawDataToken::getMicroseconds);
     }
 
-    public WiresharkEventHandler getHandler(int count, int packetAge) { //TODO: name has to be passed here, name has to be in configuration then
+    public WiresharkEventHandler getHandler(int count, int packetAge, String forwardName) { //TODO: name has to be passed here, name has to be in configuration then
         synchronized (eventHandlers) {
+            //TODO: exception if handler exists in the map
             WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, packetAge, this::deregister);
-            eventHandlers.add(eventHandler);
+            eventHandlers.put(forwardName, eventHandler);
             return eventHandler;
         }
     }

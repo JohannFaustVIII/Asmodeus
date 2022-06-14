@@ -32,7 +32,8 @@ public class EnvironmentService {
                     getOutputPort(),
                     getOutIP(),
                     getPacketsCount(),
-                    getPacketAge()
+                    getPacketAge(),
+                    getForwardName()
             ));
         }
     }
@@ -61,12 +62,12 @@ public class EnvironmentService {
         return getEnvInt("ASMO_PACKET_AGE", 60);
     }
 
-    private String getConfigFile() {
-        return getEnvString("ASMO_CONFIG_FILE", null);
+    private String getForwardName() {
+        return getEnvString("ASMO_FORWARD_NAME", "global");
     }
 
-    public String getWSFilePath() {
-        return getEnvString("ASMO_WS_FILE", "file.pcap");
+    private String getConfigFile() {
+        return getEnvString("ASMO_CONFIG_FILE", null);
     }
 
     private int getEnvInt(String name, int defaultValue) {

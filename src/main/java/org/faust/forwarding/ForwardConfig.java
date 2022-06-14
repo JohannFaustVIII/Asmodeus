@@ -12,15 +12,18 @@ public class ForwardConfig {
 
     private int packetAge;
 
+    private String forwardName;
+
     public ForwardConfig() {
     }
 
-    public ForwardConfig(int inputPort, int outputPort, String outputIp, int packetsCount, int packetAge) {
+    public ForwardConfig(int inputPort, int outputPort, String outputIp, int packetsCount, int packetAge, String forwardName) {
         this.inputPort = inputPort;
         this.outputPort = outputPort;
         this.outputIp = outputIp;
         this.packetsCount = packetsCount;
         this.packetAge = packetAge;
+        this.forwardName = forwardName;
     }
 
     public int getInputPort() {
@@ -43,6 +46,10 @@ public class ForwardConfig {
         return packetAge;
     }
 
+    public String getForwardName() {
+        return forwardName;
+    }
+
     @Override
     public String toString() {
         return "ForwardConfig{" +
@@ -51,6 +58,7 @@ public class ForwardConfig {
                 ", outputIp='" + outputIp + '\'' +
                 ", packetsCount=" + packetsCount +
                 ", packetAge=" + packetAge +
+                ", forwardName='" + forwardName + '\'' +
                 '}';
     }
 }
