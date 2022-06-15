@@ -3,8 +3,7 @@ package org.faust.wireshark;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
@@ -23,6 +22,13 @@ public class WiresharkController {
     @GetMapping("/ws/file")
     public ResponseEntity<?> getWsFile(HttpServletResponse response) throws IOException {
         InputStream inStream = new FileInputStream(wiresharkService.getWsFile());
+        IOUtils.copy(inStream, response.getOutputStream());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/ws/file/{name}")
+    public ResponseEntity<?> getSpecifiedWsFile(HttpServletResponse response, @PathVariable(name = "name") String name) throws IOException {
+        InputStream inStream = new FileInputStream(wiresharkService.getSpecifiedWsFile(name));
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
     }

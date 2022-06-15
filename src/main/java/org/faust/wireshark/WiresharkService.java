@@ -22,10 +22,11 @@ public class WiresharkService {
         return getFinishedFile(wiresharkFileWriter);
     }
 
-    // how to get ws file for single handler?
-    // change eventHandlers to map, and read proper handler
-    // don't sort and done
-    // and add to configuration its name?
+    public synchronized File getSpecifiedWsFile(String name) {
+        WiresharkFileWriter wiresharkFileWriter = getNewWiresharkFileWriter();
+        writeSpecifiedPacketsToFile(wiresharkFileWriter, name);
+        return getFinishedFile(wiresharkFileWriter);
+    }
 
     private WiresharkFileWriter getNewWiresharkFileWriter() {
         WiresharkFileWriter wiresharkFileWriter = null;
@@ -45,6 +46,15 @@ public class WiresharkService {
                 .stream()
                 .flatMap(handler -> handler.getRawPackets().stream())
                 .sorted(getDateComparator())
+                .map(RawDataToken::getBytes)
+                .forEach(wiresharkFileWriter::writeBytes);
+    }
+
+    private void writeSpecifiedPacketsToFile(WiresharkFileWriter wiresharkFileWriter, String name) {
+        eventHandlers
+                .get(name)
+                .getRawPackets()
+                .stream()
                 .map(RawDataToken::getBytes)
                 .forEach(wiresharkFileWriter::writeBytes);
     }

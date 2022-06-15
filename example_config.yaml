@@ -4,13 +4,16 @@ forwarders:
     outputIp: 'postgres_db'
     packetsCount: 100
     packetAge: 30
+    forwardName: 'forward1'
   - inputPort: 8902
     outputPort: 5432
     outputIp: 'postgres_db'
     packetsCount: 100
     packetAge: 90
+    forwardName: 'forward2'
   - inputPort: 8903
     outputPort: 5432
     outputIp: 'postgres_db'
     packetsCount: 100
     packetAge: 120
+    forwardName: 'forward3'
