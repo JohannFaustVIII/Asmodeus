@@ -70,9 +70,12 @@ public class WiresharkService {
                 .thenComparingInt(RawDataToken::getMicroseconds);
     }
 
-    public WiresharkEventHandler getHandler(int count, int packetAge, String forwardName) { //TODO: name has to be passed here, name has to be in configuration then
+    public WiresharkEventHandler getHandler(int count, int packetAge, String forwardName) {
         synchronized (eventHandlers) {
-            //TODO: exception if handler exists in the map
+            if (eventHandlers.containsKey(forwardName)) {
+                throw new WiresharkServiceException("Existing forwardName tried to be initialized: " + forwardName);
+            }
+
             WiresharkEventHandler eventHandler = new WiresharkEventHandler(count, packetAge, this::deregister);
             eventHandlers.put(forwardName, eventHandler);
             return eventHandler;
@@ -82,6 +85,13 @@ public class WiresharkService {
     public void deregister(WiresharkEventHandler eventHandler) {
         synchronized (eventHandlers) {
             eventHandlers.remove(eventHandler);
+        }
+    }
+
+    public static class WiresharkServiceException extends RuntimeException { // TODO: refactor maybe
+
+        public WiresharkServiceException(String message) {
+            super(message);
         }
     }
 }

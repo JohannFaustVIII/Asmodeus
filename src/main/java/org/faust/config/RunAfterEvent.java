@@ -19,7 +19,6 @@ public class RunAfterEvent {
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
-//        wiresharkService.processEvents();
         listenerService.startListeners();
     }
 }

@@ -56,7 +56,6 @@ public class Listener {
         private String outIp;
         private StatisticsService statisticsService;
         private WiresharkEventHandler wiresharkEventHandler;
-        private int count;
 
         public ListenerBuilder inputPort(int inputPort) {
             this.inputPort = inputPort;
@@ -80,11 +79,6 @@ public class Listener {
 
         public ListenerBuilder wsHandler(WiresharkEventHandler wiresharkEventHandler) {
             this.wiresharkEventHandler = wiresharkEventHandler;
-            return this;
-        }
-
-        public ListenerBuilder count(int count) {
-            this.count = count;
             return this;
         }
 

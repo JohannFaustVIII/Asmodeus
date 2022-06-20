@@ -37,7 +37,6 @@ public class ListenerService {
                             .outIp(config.getOutputIp())
                             .statsService(statisticsService)
                             .wsHandler(wiresharkService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
-                            .count(config.getPacketsCount())
                             .build()
                             .listen();
                 } catch (IOException e) {

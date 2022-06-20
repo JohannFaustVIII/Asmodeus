@@ -32,6 +32,4 @@ public class WiresharkController {
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    //create endpoint with /ws/file/{name}, pass the name to service
 }
