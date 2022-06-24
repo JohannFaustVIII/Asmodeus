@@ -28,35 +28,6 @@ class TCPTokenTest {
 
     public static Stream<Arguments> convertToBytesCases() {
         return Stream.generate(() -> createTestingCase()).limit(100);
-//        return Stream.of(
-//                Arguments.of(
-//                        "127.0.0.1", "1.2.3.4", 20, 50, new byte[] {0x00},
-//                        new byte[] {
-//                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//                                0x08, 0x00,
-//                                0x45,
-//                                0x00,
-//                                0x00, 0x29,
-//                                0x00, 0x00,
-//                                0x00, 0x00,
-//                                0x40,
-//                                0x06,
-//                                0x00, 0x00,
-//                                0x7f, 0x00, 0x00, 0x01,
-//                                0x01, 0x02, 0x03, 0x04,
-//                                0x00, 0x14,
-//                                0x00, 0x32,
-//                                0x00, 0x00, 0x00, 0x00,
-//                                0x00, 0x00, 0x00, 0x00,
-//                                0x50, 0x00,
-//                                0x20, 0x00,
-//                                0x00, 0x00,
-//                                0x00, 0x00,
-//                                0x00
-//                        }
-//                )
-//        );
     }
 
     private static Arguments createTestingCase() {
@@ -73,8 +44,8 @@ class TCPTokenTest {
 
         byte[] data = toByteArray(IntStream.generate(() -> ThreadLocalRandom.current().nextInt(256)).limit(ThreadLocalRandom.current().nextInt(101)).toArray());
 
-        int inputPort = ThreadLocalRandom.current().nextInt(256);
-        int outputPort = ThreadLocalRandom.current().nextInt(256);
+        int inputPort = ThreadLocalRandom.current().nextInt(65536);
+        int outputPort = ThreadLocalRandom.current().nextInt(65536);
 
         byte[] begin = new byte[] {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -90,8 +61,8 @@ class TCPTokenTest {
                 0x00, 0x00,
                 inputIpBytes[0], inputIpBytes[1], inputIpBytes[2], inputIpBytes[3],
                 outputIpBytes[0], outputIpBytes[1], outputIpBytes[2], outputIpBytes[3],
-                0x00, (byte)inputPort,
-                0x00, (byte)outputPort,
+                (byte)((inputPort >> 8) & 0xff), (byte)inputPort,
+                (byte)((outputPort >> 8) & 0xff), (byte)outputPort,
                 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00,
                 0x50, 0x00,
