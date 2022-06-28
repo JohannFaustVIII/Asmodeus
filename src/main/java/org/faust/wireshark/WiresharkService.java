@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class WiresharkService {
@@ -15,6 +16,12 @@ public class WiresharkService {
     private final Map<String, WiresharkEventHandler> eventHandlers = new HashMap<>();
 
     public WiresharkService() {}
+
+    public Set<String> getHandlers() {
+        synchronized (eventHandlers) {
+            return eventHandlers.keySet();
+        }
+    }
 
     public synchronized File getWsFile() {
         WiresharkFileWriter wiresharkFileWriter = getNewWiresharkFileWriter();

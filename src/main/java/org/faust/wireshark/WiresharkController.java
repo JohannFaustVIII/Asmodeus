@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 @RestController
 public class WiresharkController {
@@ -17,6 +18,11 @@ public class WiresharkController {
 
     public WiresharkController(WiresharkService wiresharkService) {
         this.wiresharkService = wiresharkService;
+    }
+
+    @GetMapping("/ws/handlers")
+    public Set<String> getHandlers() throws IOException {
+        return wiresharkService.getHandlers();
     }
 
     @GetMapping("/ws/file")
