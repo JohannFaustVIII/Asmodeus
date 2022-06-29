@@ -1,7 +1,7 @@
 package org.faust.forwarding;
 
 import org.faust.environment.EnvironmentService;
-import org.faust.wireshark.WiresharkService;
+import org.faust.pcap.PcapService;
 import org.faust.statistics.StatisticsService;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,12 @@ public class ListenerService {
 
     private final EnvironmentService envService;
     private final StatisticsService statisticsService;
-    private final WiresharkService wiresharkService;
+    private final PcapService pcapService;
 
-    public ListenerService(EnvironmentService envService, StatisticsService statisticsService, WiresharkService wiresharkService) {
+    public ListenerService(EnvironmentService envService, StatisticsService statisticsService, PcapService pcapService) {
         this.envService = envService;
         this.statisticsService = statisticsService;
-        this.wiresharkService = wiresharkService;
+        this.pcapService = pcapService;
     }
 
     public void startListeners() {
@@ -36,7 +36,7 @@ public class ListenerService {
                             .outputPort(config.getOutputPort())
                             .outIp(config.getOutputIp())
                             .statsService(statisticsService)
-                            .wsHandler(wiresharkService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
+                            .wsHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
                             .build()
                             .listen();
                 } catch (IOException e) {

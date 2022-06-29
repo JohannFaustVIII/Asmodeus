@@ -1,4 +1,4 @@
-package org.faust.wireshark.token;
+package org.faust.pcap.token;
 
 import org.junit.jupiter.api.Test;
 

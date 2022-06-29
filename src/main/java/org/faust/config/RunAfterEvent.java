@@ -1,6 +1,6 @@
 package org.faust.config;
 
-import org.faust.wireshark.WiresharkService;
+import org.faust.pcap.PcapService;
 import org.faust.forwarding.ListenerService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 public class RunAfterEvent {
 
     private final ListenerService listenerService;
-    private final WiresharkService wiresharkService;
+    private final PcapService pcapService;
 
-    public RunAfterEvent(ListenerService listenerService, WiresharkService wiresharkService) {
+    public RunAfterEvent(ListenerService listenerService, PcapService pcapService) {
         this.listenerService = listenerService;
-        this.wiresharkService = wiresharkService;
+        this.pcapService = pcapService;
     }
 
     @EventListener(ApplicationReadyEvent.class)

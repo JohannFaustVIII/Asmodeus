@@ -1,4 +1,4 @@
-package org.faust.wireshark.token;
+package org.faust.pcap.token;
 
 import java.util.List;
 

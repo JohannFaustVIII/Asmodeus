@@ -1,8 +1,8 @@
-package org.faust.wireshark;
+package org.faust.pcap;
 
-import org.faust.wireshark.token.DataToken;
-import org.faust.wireshark.token.RawDataToken;
-import org.faust.wireshark.token.Token;
+import org.faust.pcap.token.DataToken;
+import org.faust.pcap.token.RawDataToken;
+import org.faust.pcap.token.Token;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class WiresharkEventContainer {
+public class PcapEventContainer {
 
-    private static String CATALOG = "WIRESHARK";
+    private static String CATALOG = "PCAP";
     private static String fileSeparator = System.getProperty("file.separator");
     private String firstFilePath;
     private String secondFilePath;
 
-    private WiresharkFileWriter firstFileWriter;
-    private WiresharkFileWriter secondFileWriter;
+    private PcapFileWriter firstFileWriter;
+    private PcapFileWriter secondFileWriter;
 
     private boolean first = true;
 
@@ -31,7 +31,7 @@ public class WiresharkEventContainer {
     private final List<Integer> secondPacketSizes;
     private Object lock = new Object();
 
-    public WiresharkEventContainer(int counter, int packetAge) {
+    public PcapEventContainer(int counter, int packetAge) {
         startCatalog();
         this.counter = counter;
         this.packetAge = packetAge;
@@ -42,12 +42,12 @@ public class WiresharkEventContainer {
         generateUniqueFiles(path);
 
         try {
-            firstFileWriter = new WiresharkFileWriter(firstFilePath);
-            secondFileWriter = new WiresharkFileWriter(secondFilePath);
+            firstFileWriter = new PcapFileWriter(firstFilePath);
+            secondFileWriter = new PcapFileWriter(secondFilePath);
             firstFileWriter.openFile();
             secondFileWriter.openFile();
         } catch (FileNotFoundException ex) {
-            System.err.println("WiresharkEventContainer didn't find a file, ex: " + ex);
+            System.err.println("PcapEventContainer didn't find a file, ex: " + ex);
             ex.printStackTrace();
         }
     }
@@ -82,7 +82,7 @@ public class WiresharkEventContainer {
         secondFilePath = secondPath;
     }
 
-    public void addEvent(WiresharkForwardEvent event) {
+    public void addEvent(PcapForwardEvent event) {
         synchronized (lock) {
             Token token = new DataToken(event);
             putTokenInFile(token);
@@ -92,7 +92,7 @@ public class WiresharkEventContainer {
     }
 
     private void putTokenInFile(Token token) {
-        WiresharkFileWriter current = getPrimaryFileWriter();
+        PcapFileWriter current = getPrimaryFileWriter();
         current.saveTokenToFile(token);
     }
 
@@ -103,7 +103,7 @@ public class WiresharkEventContainer {
 
     private void switchFileIfNeeded() {
         if (getPrimaryByteCountList().size() >= counter) {
-            WiresharkFileWriter another = getSecondaryFileWriter();
+            PcapFileWriter another = getSecondaryFileWriter();
             List<Integer> anotherList = getSecondaryByteCountList();
 
             another.resetFile();
@@ -114,9 +114,9 @@ public class WiresharkEventContainer {
 
     public List<RawDataToken> getRawPackets() {
         synchronized (lock) {
-            WiresharkFileWriter current = getPrimaryFileWriter();
+            PcapFileWriter current = getPrimaryFileWriter();
             List<Integer> currentList = getPrimaryByteCountList();
-            WiresharkFileWriter another = getSecondaryFileWriter();
+            PcapFileWriter another = getSecondaryFileWriter();
             List<Integer> anotherList = getSecondaryByteCountList();
 
             int currentCount = currentList.size();
@@ -141,7 +141,7 @@ public class WiresharkEventContainer {
         }
     }
 
-    private WiresharkFileWriter getPrimaryFileWriter() {
+    private PcapFileWriter getPrimaryFileWriter() {
         return first ? firstFileWriter : secondFileWriter;
     }
 
@@ -149,7 +149,7 @@ public class WiresharkEventContainer {
         return first ? firstPacketSizes : secondPacketSizes;
     }
 
-    private WiresharkFileWriter getSecondaryFileWriter() {
+    private PcapFileWriter getSecondaryFileWriter() {
         return !first ? firstFileWriter : secondFileWriter;
     }
 

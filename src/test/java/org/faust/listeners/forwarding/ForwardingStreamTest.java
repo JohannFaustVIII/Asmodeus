@@ -1,7 +1,7 @@
 package org.faust.listeners.forwarding;
 
 import org.faust.forwarding.ForwardingStream;
-import org.faust.wireshark.WiresharkEventHandler;
+import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,12 +24,12 @@ class ForwardingStreamTest {
     @Mock
     private static StatisticsService mockedStats;
     @Mock
-    private static WiresharkEventHandler wiresharkEventHandler;
+    private static PcapEventHandler pcapEventHandler;
 
     @BeforeAll
     static void setUp() {
         mockedStats = Mockito.mock(StatisticsService.class);
-        wiresharkEventHandler = Mockito.mock(WiresharkEventHandler.class);
+        pcapEventHandler = Mockito.mock(PcapEventHandler.class);
     }
 
     @ParameterizedTest(name = "forwardBytes: {0}")
@@ -44,7 +44,7 @@ class ForwardingStreamTest {
                 .inputStream(inStream)
                 .outputStream(outStream)
                 .statsService(mockedStats)
-                .wsEventHandler(wiresharkEventHandler)
+                .wsEventHandler(pcapEventHandler)
                 .build();
 
         //when
@@ -65,7 +65,7 @@ class ForwardingStreamTest {
                 .inputStream(inStream)
                 .outputStream(outStream)
                 .statsService(mockedStats)
-                .wsEventHandler(wiresharkEventHandler)
+                .wsEventHandler(pcapEventHandler)
                 .build();
 
         //when

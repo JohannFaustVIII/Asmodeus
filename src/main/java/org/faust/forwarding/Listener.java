@@ -1,6 +1,6 @@
 package org.faust.forwarding;
 
-import org.faust.wireshark.WiresharkEventHandler;
+import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 
 import java.io.IOException;
@@ -13,14 +13,14 @@ public class Listener {
     private final int outputPort;
     private final String outIp;
     private final StatisticsService statisticsService;
-    private final WiresharkEventHandler wiresharkEventHandler;
+    private final PcapEventHandler pcapEventHandler;
 
     private Listener(ListenerBuilder builder) {
         this.inputPort = builder.inputPort;
         this.outputPort = builder.outputPort;
         this.outIp = builder.outIp;
         this.statisticsService = builder.statisticsService;
-        this.wiresharkEventHandler = builder.wiresharkEventHandler; //TODO: think about removing/cleaning the handler?
+        this.pcapEventHandler = builder.pcapEventHandler; //TODO: think about removing/cleaning the handler?
     }
 
     public void listen() throws IOException {
@@ -39,7 +39,7 @@ public class Listener {
                     .outInputStream(outSocket.getInputStream())
                     .outOutputStream(outSocket.getOutputStream())
                     .statsService(statisticsService)
-                    .wsEventHandler(wiresharkEventHandler)
+                    .wsEventHandler(pcapEventHandler)
                     .outIp(outIp)
                     .inIp(socket.getInetAddress().getHostAddress())
                     .outPort(outSocket.getPort())
@@ -55,7 +55,7 @@ public class Listener {
         private int outputPort;
         private String outIp;
         private StatisticsService statisticsService;
-        private WiresharkEventHandler wiresharkEventHandler;
+        private PcapEventHandler pcapEventHandler;
 
         public ListenerBuilder inputPort(int inputPort) {
             this.inputPort = inputPort;
@@ -77,8 +77,8 @@ public class Listener {
             return this;
         }
 
-        public ListenerBuilder wsHandler(WiresharkEventHandler wiresharkEventHandler) {
-            this.wiresharkEventHandler = wiresharkEventHandler;
+        public ListenerBuilder wsHandler(PcapEventHandler pcapEventHandler) {
+            this.pcapEventHandler = pcapEventHandler;
             return this;
         }
 

@@ -1,6 +1,6 @@
-package org.faust.wireshark;
+package org.faust.pcap;
 
-public class WiresharkForwardEvent {
+public class PcapForwardEvent {
 
     private final String inIP;
     private final String outIP;
@@ -10,7 +10,7 @@ public class WiresharkForwardEvent {
     private final long timestamp;
 
 
-    public WiresharkForwardEvent(String inIP, String outIP, int inPort, int outPort, byte[] bytes) {
+    public PcapForwardEvent(String inIP, String outIP, int inPort, int outPort, byte[] bytes) {
         this.inIP = inIP;
         this.outIP = outIP;
         this.inPort = inPort;

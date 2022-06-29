@@ -1,17 +1,17 @@
-package org.faust.wireshark;
+package org.faust.pcap;
 
-import org.faust.wireshark.token.HeaderToken;
-import org.faust.wireshark.token.Token;
+import org.faust.pcap.token.HeaderToken;
+import org.faust.pcap.token.Token;
 
 import java.io.*;
 
-public class WiresharkFileWriter {
+public class PcapFileWriter {
 
     private final String filePath;
     private File outputFile;
     private OutputStream outputStream;
 
-    public WiresharkFileWriter(String filePath) throws FileNotFoundException {
+    public PcapFileWriter(String filePath) throws FileNotFoundException {
         this.filePath = filePath;
         openFileOutputStream();
     }

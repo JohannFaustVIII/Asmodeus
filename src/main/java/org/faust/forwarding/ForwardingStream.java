@@ -1,7 +1,7 @@
 package org.faust.forwarding;
 
-import org.faust.wireshark.WiresharkEventHandler;
-import org.faust.wireshark.WiresharkForwardEvent;
+import org.faust.pcap.PcapEventHandler;
+import org.faust.pcap.PcapForwardEvent;
 import org.faust.statistics.ForwardingStats;
 import org.faust.statistics.StatisticsService;
 
@@ -16,7 +16,7 @@ public class ForwardingStream implements Runnable {
     private final InputStream inputStream;
     private final OutputStream outputStream;
     private final StatisticsService statisticsService;
-    private final WiresharkEventHandler wiresharkEventHandler;
+    private final PcapEventHandler pcapEventHandler;
     private final String inIp;
     private final String outIp;
     private final int inPort;
@@ -28,7 +28,7 @@ public class ForwardingStream implements Runnable {
         this.inputStream = builder.inputStream;
         this.outputStream = builder.outputStream;
         this.statisticsService = builder.statisticsService;
-        this.wiresharkEventHandler = builder.wiresharkEventHandler;
+        this.pcapEventHandler = builder.pcapEventHandler;
         this.inIp = builder.inIp;
         this.outIp = builder.outIp;
         this.inPort = builder.inPort;
@@ -82,7 +82,7 @@ public class ForwardingStream implements Runnable {
         result[0] = (byte) firstByte;
         System.arraycopy(restOfBytes, 0, result, 1, restOfBytes.length);
 
-        wiresharkEventHandler.addEvent(new WiresharkForwardEvent(inIp, outIp, inPort, outPort, result));
+        pcapEventHandler.addEvent(new PcapForwardEvent(inIp, outIp, inPort, outPort, result));
     }
 
     public static class ForwardingStreamBuilder {
@@ -90,7 +90,7 @@ public class ForwardingStream implements Runnable {
         private InputStream inputStream;
         private OutputStream outputStream;
         private StatisticsService statisticsService;
-        private WiresharkEventHandler wiresharkEventHandler;
+        private PcapEventHandler pcapEventHandler;
         private String inIp;
         private String outIp;
         private int inPort;
@@ -116,8 +116,8 @@ public class ForwardingStream implements Runnable {
             return this;
         }
 
-        public ForwardingStreamBuilder wsEventHandler(WiresharkEventHandler wiresharkEventHandler) {
-            this.wiresharkEventHandler = wiresharkEventHandler;
+        public ForwardingStreamBuilder wsEventHandler(PcapEventHandler pcapEventHandler) {
+            this.pcapEventHandler = pcapEventHandler;
             return this;
         }
 

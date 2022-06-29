@@ -1,6 +1,6 @@
 package org.faust.forwarding;
 
-import org.faust.wireshark.WiresharkEventHandler;
+import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 
 import java.io.InputStream;
@@ -15,7 +15,7 @@ public class Forwarder {
     private final InputStream outInputStream;
     private final OutputStream outOutputStream;
     private final StatisticsService statisticsService;
-    private final WiresharkEventHandler wiresharkEventHandler;
+    private final PcapEventHandler pcapEventHandler;
     private final String outIp;
     private final String inIp;
     private final int outPort;
@@ -29,7 +29,7 @@ public class Forwarder {
         outOutputStream = builder.outOutputStream;
 
         this.statisticsService = builder.statisticsService;
-        this.wiresharkEventHandler = builder.wiresharkEventHandler;
+        this.pcapEventHandler = builder.pcapEventHandler;
         this.outIp = builder.outIp;
         this.inIp = builder.inIp;
 
@@ -44,7 +44,7 @@ public class Forwarder {
                 .inputStream(inInputStream)
                 .outputStream(outOutputStream)
                 .statsService(statisticsService)
-                .wsEventHandler(wiresharkEventHandler)
+                .wsEventHandler(pcapEventHandler)
                 .inIp(inIp)
                 .outIp(outIp)
                 .inPort(inPort)
@@ -55,7 +55,7 @@ public class Forwarder {
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)
                 .statsService(statisticsService)
-                .wsEventHandler(wiresharkEventHandler)
+                .wsEventHandler(pcapEventHandler)
                 .inIp(outIp)
                 .outIp(inIp)
                 .inPort(outPort)
@@ -69,7 +69,7 @@ public class Forwarder {
         private InputStream outInputStream;
         private OutputStream outOutputStream;
         private StatisticsService statisticsService;
-        private WiresharkEventHandler wiresharkEventHandler;
+        private PcapEventHandler pcapEventHandler;
         private String outIp;
         private String inIp;
         private int outPort;
@@ -100,8 +100,8 @@ public class Forwarder {
             return this;
         }
 
-        public ForwarderBuilder wsEventHandler(WiresharkEventHandler wiresharkEventHandler) {
-            this.wiresharkEventHandler = wiresharkEventHandler;
+        public ForwarderBuilder wsEventHandler(PcapEventHandler pcapEventHandler) {
+            this.pcapEventHandler = pcapEventHandler;
             return this;
         }
 

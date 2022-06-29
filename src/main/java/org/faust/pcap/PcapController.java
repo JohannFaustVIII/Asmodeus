@@ -1,4 +1,4 @@
-package org.faust.wireshark;
+package org.faust.pcap;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpStatus;
@@ -11,30 +11,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
+@RequestMapping("/pcap")
 @RestController
-public class WiresharkController {
+public class PcapController {
 
-    private final WiresharkService wiresharkService;
+    private final PcapService pcapService;
 
-    public WiresharkController(WiresharkService wiresharkService) {
-        this.wiresharkService = wiresharkService;
+    public PcapController(PcapService pcapService) {
+        this.pcapService = pcapService;
     }
 
-    @GetMapping("/ws/handlers")
+    @GetMapping("/handlers")
     public Set<String> getHandlers() throws IOException {
-        return wiresharkService.getHandlers();
+        return pcapService.getHandlers();
     }
 
-    @GetMapping("/ws/file")
+    @GetMapping("/file")
     public ResponseEntity<?> getWsFile(HttpServletResponse response) throws IOException {
-        InputStream inStream = new FileInputStream(wiresharkService.getWsFile());
+        InputStream inStream = new FileInputStream(pcapService.getWsFile());
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/ws/file/{name}")
+    @GetMapping("/file/{name}")
     public ResponseEntity<?> getSpecifiedWsFile(HttpServletResponse response, @PathVariable(name = "name") String name) throws IOException {
-        InputStream inStream = new FileInputStream(wiresharkService.getSpecifiedWsFile(name));
+        InputStream inStream = new FileInputStream(pcapService.getSpecifiedWsFile(name));
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
     }
