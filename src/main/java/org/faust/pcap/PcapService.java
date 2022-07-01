@@ -95,10 +95,4 @@ public class PcapService {
         }
     }
 
-    public static class PcapServiceException extends RuntimeException { // TODO: refactor maybe
-
-        public PcapServiceException(String message) {
-            super(message);
-        }
-    }
 }
