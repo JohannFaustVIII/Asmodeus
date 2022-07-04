@@ -22,8 +22,21 @@ public class PcapController {
     }
 
     @GetMapping("/handlers")
-    public Set<String> getHandlers() throws IOException {
+    public Set<String> getHandlers() {
         return pcapService.getHandlers();
+    }
+
+    @PostMapping("/handlers")
+    public void addHandler() {
+        // pass here DTO, map to ForwardConfig, add to service and start?
+        // requires refactoring of starting forwarders
+    }
+
+    @DeleteMapping
+    public void removeHandler() {
+        // pass here... name of forwarded? and remove from... where?
+        // required refactoring, and stopping forwarders, and waiting to drain existing connections
+        // to think
     }
 
     @GetMapping("/file")
