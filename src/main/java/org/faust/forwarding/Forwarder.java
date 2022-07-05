@@ -50,7 +50,7 @@ public class Forwarder {
                 .inPort(inPort)
                 .outPort(outPort)
                 .build());
-        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
+        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder() // not sure about this async? forwarding is a long job?
                 .phaser(phaser)
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)

@@ -26,23 +26,26 @@ public class ListenerService {
     public void startListeners() {
         List<ForwardConfig> forwardConfigList = envService.getForwardingConfig();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(forwardConfigList.size());
+        forwardConfigList.forEach(this::startListener);
+    }
 
-        forwardConfigList.forEach(config -> {
-            executorService.submit(() -> {
-                try {
-                    new Listener.ListenerBuilder()
-                            .inputPort(config.getInputPort())
-                            .outputPort(config.getOutputPort())
-                            .outIp(config.getOutputIp())
-                            .statsService(statisticsService)
-                            .wsHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
-                            .build()
-                            .listen();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        });
+    public void startListener(ForwardConfig config) {
+        // TODO: add registering to a list, to enable turning down later
+
+        Listener listener = new Listener.ListenerBuilder()
+                .inputPort(config.getInputPort())
+                .outputPort(config.getOutputPort())
+                .outIp(config.getOutputIp())
+                .statsService(statisticsService)
+                .wsHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
+                .build();
+
+        new Thread(() -> {
+            try {
+                listener.listen(); // TODO: consume IOException inside the method?
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

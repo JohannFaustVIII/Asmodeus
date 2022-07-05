@@ -45,7 +45,7 @@ public class Listener {
                     .outPort(outSocket.getPort())
                     .inPort(socket.getPort())
                     .build();
-            forwarder.startForwarding();
+            forwarder.startForwarding(); // it should be registered if alive? to know during draining if we wait for something, or to make force close
         }
     }
 
