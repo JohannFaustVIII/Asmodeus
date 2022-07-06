@@ -6,6 +6,8 @@ import org.faust.statistics.StatisticsService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Listener {
 
@@ -14,6 +16,7 @@ public class Listener {
     private final String outIp;
     private final StatisticsService statisticsService;
     private final PcapEventHandler pcapEventHandler;
+    private final List<Forwarder> activeForwarders = new LinkedList<>();
 
     private Listener(ListenerBuilder builder) {
         this.inputPort = builder.inputPort;
@@ -28,7 +31,7 @@ public class Listener {
         ServerSocket serverSocket = new ServerSocket(inputPort);
 
         while (!serverSocket.isClosed()) {
-            Socket socket = serverSocket.accept();
+            Socket socket = serverSocket.accept(); // it will stop the thread
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);
@@ -45,6 +48,7 @@ public class Listener {
                     .outPort(outSocket.getPort())
                     .inPort(socket.getPort())
                     .build();
+            activeForwarders.add(forwarder);
             forwarder.startForwarding(); // it should be registered if alive? to know during draining if we wait for something, or to make force close
         }
     }
