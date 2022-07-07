@@ -39,7 +39,7 @@ public class Forwarder {
 
     public void startForwarding() {
         Phaser phaser = new Phaser();
-        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder()
+        ForwardingStream stream1 = new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
                 .inputStream(inInputStream)
                 .outputStream(outOutputStream)
@@ -49,8 +49,8 @@ public class Forwarder {
                 .outIp(outIp)
                 .inPort(inPort)
                 .outPort(outPort)
-                .build());
-        CompletableFuture.runAsync(new ForwardingStream.ForwardingStreamBuilder() // not sure about this async? forwarding is a long job?
+                .build();
+        ForwardingStream stream2 = new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
                 .inputStream(outInputStream)
                 .outputStream(inOutputStream)
@@ -60,7 +60,12 @@ public class Forwarder {
                 .outIp(inIp)
                 .inPort(outPort)
                 .outPort(inPort)
-                .build());
+                .build();
+        stream1.linkStream(stream2);
+        // TODO: bind action after terminating streams to deregister Forwarder?
+
+        CompletableFuture.runAsync(stream1);
+        CompletableFuture.runAsync(stream2);
     }
 
     public static class ForwarderBuilder {

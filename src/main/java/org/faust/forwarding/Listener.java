@@ -31,7 +31,7 @@ public class Listener {
         ServerSocket serverSocket = new ServerSocket(inputPort);
 
         while (!serverSocket.isClosed()) {
-            Socket socket = serverSocket.accept(); // it will stop the thread
+            Socket socket = serverSocket.accept(); // it will pause the thread
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);

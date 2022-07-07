@@ -21,6 +21,7 @@ public class ForwardingStream implements Runnable {
     private final String outIp;
     private final int inPort;
     private final int outPort;
+    private ForwardingStream linkedStream;
 
     public ForwardingStream(ForwardingStreamBuilder builder) {
         this.phaser = builder.phaser;
@@ -51,6 +52,7 @@ public class ForwardingStream implements Runnable {
         } catch (IOException e) {
             System.err.println(Thread.currentThread().getId() + ": IOException thrown: " + e);
         } finally {
+            turnOffLinked();
             phaser.arriveAndAwaitAdvance();
             System.out.println(Thread.currentThread().getId() + ": Stopped forwarding.");
         }
@@ -83,6 +85,21 @@ public class ForwardingStream implements Runnable {
         System.arraycopy(restOfBytes, 0, result, 1, restOfBytes.length);
 
         pcapEventHandler.addEvent(new PcapForwardEvent(inIp, outIp, inPort, outPort, result));
+    }
+
+    public void linkStream(ForwardingStream forwardingStream) {
+        this.linkedStream = forwardingStream;
+        forwardingStream.linkedStream = this;
+    }
+
+    private void turnOffLinked() {
+        if (linkedStream != null) {
+            linkedStream.turnOff();
+        }
+    }
+
+    private void turnOff() {
+        // TODO: to implement
     }
 
     public static class ForwardingStreamBuilder {
