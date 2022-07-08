@@ -53,6 +53,14 @@ public class Listener {
         }
     }
 
+    public void drain() {
+        // TODO: 1. close Listener thread, 2. Let forwarders know about draining? 3. After draining all, deregister handler?
+    }
+
+    public void terminate() {
+        // TODO: 1. close Listener thread, 2. Terminate forwarders 3. Deregister handler
+    }
+
     public static class ListenerBuilder {
 
         private int inputPort;
