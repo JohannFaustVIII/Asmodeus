@@ -11,14 +11,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
-@RequestMapping("/pcap")
+import org.faust.event.Event;
+import org.faust.event.EventService;
+
 @RestController
+@RequestMapping("/pcap")
 public class PcapController {
 
     private final PcapService pcapService;
 
-    public PcapController(PcapService pcapService) {
+    private final EventService eventService;
+
+    public PcapController(PcapService pcapService, EventService eventService) {
         this.pcapService = pcapService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/handlers")
@@ -41,6 +47,7 @@ public class PcapController {
 
     @GetMapping("/file")
     public ResponseEntity<?> getWsFile(HttpServletResponse response) throws IOException {
+        eventService.addEvent("Reading file with all packet captures.");
         InputStream inStream = new FileInputStream(pcapService.getWsFile());
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
@@ -48,8 +55,14 @@ public class PcapController {
 
     @GetMapping("/file/{name}")
     public ResponseEntity<?> getSpecifiedWsFile(HttpServletResponse response, @PathVariable(name = "name") String name) throws IOException {
+        eventService.addEvent("Reading specified packet capture: " + name);
         InputStream inStream = new FileInputStream(pcapService.getSpecifiedWsFile(name));
         IOUtils.copy(inStream, response.getOutputStream());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/events")
+    public Iterable<Event> getEvents() {
+        return eventService.getEvents();
     }
 }

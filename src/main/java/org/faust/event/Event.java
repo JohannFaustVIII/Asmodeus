@@ -5,14 +5,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "events")
+@Entity(name = "events") // TODO: lombok
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // TODO: change to UUID?
-    private Long timestamp;
+    private Long timestamp = System.currentTimeMillis();
     private String message;
+
+    public Event() {
+    }
+
+    Event(String message) {
+        this.message = message;
+    }
 
     public Long getId() {
         return id;
@@ -37,6 +44,4 @@ public class Event {
     public void setMessage(String message) {
         this.message = message;
     }
-
-// TODO: add constructors and getters/ or use lombok
 }
