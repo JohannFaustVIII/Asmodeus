@@ -1,17 +1,31 @@
 package org.faust.event;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity(name = "events")
+@Table(name = " PcapEvents")
 public class Event {
 
     @Id
-    @GeneratedValue
-    private Long id; // TODO: change to UUID?
-    private Long timestamp;
-    private String message;
+    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
+    @GeneratedValue(generator = "UUIDGenerator")
+    @Column(name = "eventId", updatable = false, nullable = false)
+    private UUID id;
 
-    // TODO: add constructors and getters/ or use lombok
+    @Column(name = "timestamp")
+    private Long timestamp = System.currentTimeMillis();
+
+    @NonNull
+    @Column(name = "eventMessage", nullable = false)
+    private String message;
 }
