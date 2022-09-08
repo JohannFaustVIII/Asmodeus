@@ -7,6 +7,9 @@ services:
     environment:
       ASMO_CONFIG_FILE: 'config.yaml'
       ASMO_HTTP_PORT: 9090
+      DB_URL: 'jdbc:postgresql://postgres_db:5432/postgres'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
     expose:
       - "8901-8903"
     ports:
