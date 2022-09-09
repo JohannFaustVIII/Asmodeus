@@ -18,6 +18,8 @@ public class Listener {
     private final PcapEventHandler pcapEventHandler;
     private final List<Forwarder> activeForwarders = new LinkedList<>();
 
+    private Thread listenerThread = null;
+
     private Listener(ListenerBuilder builder) {
         this.inputPort = builder.inputPort;
         this.outputPort = builder.outputPort;
@@ -26,12 +28,23 @@ public class Listener {
         this.pcapEventHandler = builder.pcapEventHandler; //TODO: think about removing/cleaning the handler?
     }
 
+    public void startListenerThread() {
+        listenerThread = new Thread(() -> {
+            try {
+                listen(); // TODO: consume IOException inside the method?
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        listenerThread.start();
+    }
+
     public void listen() throws IOException {
         System.out.println("Starting server socket on port " + inputPort);
         ServerSocket serverSocket = new ServerSocket(inputPort);
 
         while (!serverSocket.isClosed()) {
-            Socket socket = serverSocket.accept(); // it will pause the thread
+            Socket socket = serverSocket.accept(); // it will pause the thread, interrupt may happen here?
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);

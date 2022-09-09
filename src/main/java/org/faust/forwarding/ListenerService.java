@@ -5,10 +5,7 @@ import org.faust.pcap.PcapService;
 import org.faust.statistics.StatisticsService;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 public class ListenerService {
@@ -40,12 +37,6 @@ public class ListenerService {
                 .wsHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
                 .build();
 
-        new Thread(() -> {
-            try {
-                listener.listen(); // TODO: consume IOException inside the method?
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        listener.startListenerThread();
     }
 }
