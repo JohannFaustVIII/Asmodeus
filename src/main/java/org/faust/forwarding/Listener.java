@@ -49,7 +49,7 @@ public class Listener {
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);
 
-            Forwarder forwarder = new Forwarder.ForwarderBuilder()
+            Forwarder forwarder = new Forwarder.ForwarderBuilder() // TODO: to refactor: 1. Forwarder can have passed some fields in its constructor, and some via startForwarding (sockets) to use a single Forwarder
                     .inInputStream(socket.getInputStream())
                     .inOutputStream(socket.getOutputStream())
                     .outInputStream(outSocket.getInputStream())

@@ -5,7 +5,6 @@ import org.faust.statistics.StatisticsService;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Phaser;
 
 public class Forwarder {
@@ -62,10 +61,9 @@ public class Forwarder {
                 .outPort(inPort)
                 .build();
         stream1.linkStream(stream2);
-        // TODO: bind action after terminating streams to deregister Forwarder?
 
-        CompletableFuture.runAsync(stream1);
-        CompletableFuture.runAsync(stream2);
+        stream1.start();
+        stream2.start();
     }
 
     public static class ForwarderBuilder {

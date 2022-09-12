@@ -23,6 +23,8 @@ public class ForwardingStream implements Runnable {
     private final int outPort;
     private ForwardingStream linkedStream;
 
+    private Thread currentThread; // TODO: to use to interrupt the thread
+
     public ForwardingStream(ForwardingStreamBuilder builder) {
         this.phaser = builder.phaser;
         this.phaser.register();
@@ -34,6 +36,11 @@ public class ForwardingStream implements Runnable {
         this.outIp = builder.outIp;
         this.inPort = builder.inPort;
         this.outPort = builder.outPort;
+    }
+
+    public void start() {
+        currentThread = new Thread(this);
+        currentThread.start();
     }
 
     @Override
@@ -60,7 +67,7 @@ public class ForwardingStream implements Runnable {
 
     private int forwardBytes() throws IOException {
         int count = 0;
-        int firstByte = inputStream.read();
+        int firstByte = inputStream.read(); // this is locking operation, in theory
         if (firstByte != -1) {
             count++;
             outputStream.write(firstByte);
@@ -99,7 +106,8 @@ public class ForwardingStream implements Runnable {
     }
 
     private void turnOff() {
-        // TODO: to implement
+       currentThread.interrupt();
+       // it should notify forwarder?
     }
 
     public static class ForwardingStreamBuilder {
