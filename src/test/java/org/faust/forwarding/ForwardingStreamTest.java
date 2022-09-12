@@ -1,6 +1,5 @@
-package org.faust.listeners.forwarding;
+package org.faust.forwarding;
 
-import org.faust.forwarding.ForwardingStream;
 import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 import org.junit.jupiter.api.Assertions;
@@ -43,8 +42,8 @@ class ForwardingStreamTest {
                 .phaser(phaser)
                 .inputStream(inStream)
                 .outputStream(outStream)
-                .statsService(mockedStats)
-                .wsEventHandler(pcapEventHandler)
+                .statisticsService(mockedStats)
+                .pcapEventHandler(pcapEventHandler)
                 .build();
 
         //when
@@ -64,8 +63,8 @@ class ForwardingStreamTest {
                 .phaser(phaser)
                 .inputStream(inStream)
                 .outputStream(outStream)
-                .statsService(mockedStats)
-                .wsEventHandler(pcapEventHandler)
+                .statisticsService(mockedStats)
+                .pcapEventHandler(pcapEventHandler)
                 .build();
 
         //when

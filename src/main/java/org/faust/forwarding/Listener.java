@@ -1,5 +1,6 @@
 package org.faust.forwarding;
 
+import lombok.Builder;
 import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 
@@ -9,6 +10,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
+@Builder
 public class Listener {
 
     private final int inputPort;
@@ -19,14 +21,6 @@ public class Listener {
     private final List<Forwarder> activeForwarders = new LinkedList<>();
 
     private Thread listenerThread = null;
-
-    private Listener(ListenerBuilder builder) {
-        this.inputPort = builder.inputPort;
-        this.outputPort = builder.outputPort;
-        this.outIp = builder.outIp;
-        this.statisticsService = builder.statisticsService;
-        this.pcapEventHandler = builder.pcapEventHandler; //TODO: think about removing/cleaning the handler?
-    }
 
     public void startListenerThread() {
         listenerThread = new Thread(() -> {
@@ -54,8 +48,8 @@ public class Listener {
                     .inOutputStream(socket.getOutputStream())
                     .outInputStream(outSocket.getInputStream())
                     .outOutputStream(outSocket.getOutputStream())
-                    .statsService(statisticsService)
-                    .wsEventHandler(pcapEventHandler)
+                    .statisticsService(statisticsService)
+                    .pcapEventHandler(pcapEventHandler)
                     .outIp(outIp)
                     .inIp(socket.getInetAddress().getHostAddress())
                     .outPort(outSocket.getPort())
@@ -72,43 +66,5 @@ public class Listener {
 
     public void terminate() {
         // TODO: 1. close Listener thread, 2. Terminate forwarders 3. Deregister handler
-    }
-
-    public static class ListenerBuilder {
-
-        private int inputPort;
-        private int outputPort;
-        private String outIp;
-        private StatisticsService statisticsService;
-        private PcapEventHandler pcapEventHandler;
-
-        public ListenerBuilder inputPort(int inputPort) {
-            this.inputPort = inputPort;
-            return this;
-        }
-
-        public ListenerBuilder outputPort(int outputPort) {
-            this.outputPort = outputPort;
-            return this;
-        }
-
-        public ListenerBuilder outIp(String outIp) {
-            this.outIp = outIp;
-            return this;
-        }
-
-        public ListenerBuilder statsService(StatisticsService statisticsService) {
-            this.statisticsService = statisticsService;
-            return this;
-        }
-
-        public ListenerBuilder wsHandler(PcapEventHandler pcapEventHandler) {
-            this.pcapEventHandler = pcapEventHandler;
-            return this;
-        }
-
-        public Listener build() {
-            return new Listener(this);
-        }
     }
 }

@@ -1,5 +1,6 @@
 package org.faust.forwarding;
 
+import lombok.Builder;
 import org.faust.pcap.PcapEventHandler;
 import org.faust.pcap.PcapForwardEvent;
 import org.faust.statistics.ForwardingStats;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Phaser;
 
+@Builder
 public class ForwardingStream implements Runnable {
 
     private final Phaser phaser;
@@ -24,19 +26,6 @@ public class ForwardingStream implements Runnable {
     private ForwardingStream linkedStream;
 
     private Thread currentThread; // TODO: to use to interrupt the thread
-
-    public ForwardingStream(ForwardingStreamBuilder builder) {
-        this.phaser = builder.phaser;
-        this.phaser.register();
-        this.inputStream = builder.inputStream;
-        this.outputStream = builder.outputStream;
-        this.statisticsService = builder.statisticsService;
-        this.pcapEventHandler = builder.pcapEventHandler;
-        this.inIp = builder.inIp;
-        this.outIp = builder.outIp;
-        this.inPort = builder.inPort;
-        this.outPort = builder.outPort;
-    }
 
     public void start() {
         currentThread = new Thread(this);
@@ -108,66 +97,5 @@ public class ForwardingStream implements Runnable {
     private void turnOff() {
        currentThread.interrupt();
        // it should notify forwarder?
-    }
-
-    public static class ForwardingStreamBuilder {
-        private Phaser phaser;
-        private InputStream inputStream;
-        private OutputStream outputStream;
-        private StatisticsService statisticsService;
-        private PcapEventHandler pcapEventHandler;
-        private String inIp;
-        private String outIp;
-        private int inPort;
-        private int outPort;
-
-        public ForwardingStreamBuilder phaser(Phaser phaser) {
-            this.phaser = phaser;
-            return this;
-        }
-
-        public ForwardingStreamBuilder inputStream(InputStream inputStream) {
-            this.inputStream = inputStream;
-            return this;
-        }
-
-        public ForwardingStreamBuilder outputStream(OutputStream outputStream) {
-            this.outputStream = outputStream;
-            return this;
-        }
-
-        public ForwardingStreamBuilder statsService(StatisticsService statisticsService) {
-            this.statisticsService = statisticsService;
-            return this;
-        }
-
-        public ForwardingStreamBuilder wsEventHandler(PcapEventHandler pcapEventHandler) {
-            this.pcapEventHandler = pcapEventHandler;
-            return this;
-        }
-
-        public ForwardingStreamBuilder inIp(String inIp) {
-            this.inIp = inIp;
-            return this;
-        }
-
-        public ForwardingStreamBuilder outIp(String outIp) {
-            this.outIp = outIp;
-            return this;
-        }
-
-        public ForwardingStreamBuilder inPort(int inPort) {
-            this.inPort = inPort;
-            return this;
-        }
-
-        public ForwardingStreamBuilder outPort(int outPort) {
-            this.outPort = outPort;
-            return this;
-        }
-
-        public ForwardingStream build() {
-            return new ForwardingStream(this);
-        }
     }
 }

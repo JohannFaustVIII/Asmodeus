@@ -33,8 +33,8 @@ public class ListenerService {
                 .inputPort(config.getInputPort())
                 .outputPort(config.getOutputPort())
                 .outIp(config.getOutputIp())
-                .statsService(statisticsService)
-                .wsHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
+                .statisticsService(statisticsService)
+                .pcapEventHandler(pcapService.getHandler(config.getPacketsCount(), config.getPacketAge(), config.getForwardName()))
                 .build();
 
         listener.startListenerThread();
