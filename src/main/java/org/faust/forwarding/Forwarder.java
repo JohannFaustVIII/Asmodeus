@@ -4,47 +4,40 @@ import lombok.Builder;
 import org.faust.pcap.PcapEventHandler;
 import org.faust.statistics.StatisticsService;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.concurrent.Phaser;
 
 @Builder
 public class Forwarder {
 
-    private final InputStream inInputStream;
-    private final OutputStream inOutputStream;
-    private final InputStream outInputStream;
-    private final OutputStream outOutputStream;
     private final StatisticsService statisticsService;
     private final PcapEventHandler pcapEventHandler;
-    private final String outIp;
-    private final String inIp;
-    private final int outPort;
-    private final int inPort;
 
-    public void startForwarding() {
+    public void startForwarding(Socket input, Socket output) throws IOException {
+        // TODO: check addresses if correct
         Phaser phaser = new Phaser();
         ForwardingStream stream1 = new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
-                .inputStream(inInputStream)
-                .outputStream(outOutputStream)
+                .inputStream(input.getInputStream())
+                .outputStream(output.getOutputStream())
                 .statisticsService(statisticsService)
                 .pcapEventHandler(pcapEventHandler)
-                .inIp(inIp)
-                .outIp(outIp)
-                .inPort(inPort)
-                .outPort(outPort)
+                .inIp(input.getInetAddress().getHostAddress())
+                .outIp(output.getInetAddress().getHostAddress())
+                .inPort(input.getPort())
+                .outPort(output.getPort())
                 .build();
         ForwardingStream stream2 = new ForwardingStream.ForwardingStreamBuilder()
                 .phaser(phaser)
-                .inputStream(outInputStream)
-                .outputStream(inOutputStream)
+                .inputStream(output.getInputStream())
+                .outputStream(input.getOutputStream())
                 .statisticsService(statisticsService)
                 .pcapEventHandler(pcapEventHandler)
-                .inIp(outIp)
-                .outIp(inIp)
-                .inPort(outPort)
-                .outPort(inPort)
+                .inIp(output.getInetAddress().getHostAddress())
+                .outIp(input.getInetAddress().getHostAddress())
+                .inPort(output.getPort())
+                .outPort(input.getPort())
                 .build();
         stream1.linkStream(stream2);
 

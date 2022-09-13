@@ -7,8 +7,6 @@ import org.faust.statistics.StatisticsService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
 
 @Builder
 public class Listener {
@@ -18,11 +16,12 @@ public class Listener {
     private final String outIp;
     private final StatisticsService statisticsService;
     private final PcapEventHandler pcapEventHandler;
-    private final List<Forwarder> activeForwarders = new LinkedList<>();
+    private Forwarder activeForwarder;
 
     private Thread listenerThread = null;
 
     public void startListenerThread() {
+        // TODO: check if thread is running to avoid multiple starting
         listenerThread = new Thread(() -> {
             try {
                 listen(); // TODO: consume IOException inside the method?
@@ -37,26 +36,18 @@ public class Listener {
         System.out.println("Starting server socket on port " + inputPort);
         ServerSocket serverSocket = new ServerSocket(inputPort);
 
+        activeForwarder = new Forwarder.ForwarderBuilder()
+                .pcapEventHandler(pcapEventHandler)
+                .statisticsService(statisticsService)
+                .build(); // TODO: move to constructor??? to remove from builder
+
         while (!serverSocket.isClosed()) {
             Socket socket = serverSocket.accept(); // it will pause the thread, interrupt may happen here?
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
             Socket outSocket = new Socket(outIp, outputPort);
 
-            Forwarder forwarder = new Forwarder.ForwarderBuilder() // TODO: to refactor: 1. Forwarder can have passed some fields in its constructor, and some via startForwarding (sockets) to use a single Forwarder
-                    .inInputStream(socket.getInputStream())
-                    .inOutputStream(socket.getOutputStream())
-                    .outInputStream(outSocket.getInputStream())
-                    .outOutputStream(outSocket.getOutputStream())
-                    .statisticsService(statisticsService)
-                    .pcapEventHandler(pcapEventHandler)
-                    .outIp(outIp)
-                    .inIp(socket.getInetAddress().getHostAddress())
-                    .outPort(outSocket.getPort())
-                    .inPort(socket.getPort())
-                    .build();
-            activeForwarders.add(forwarder);
-            forwarder.startForwarding(); // it should be registered if alive? to know during draining if we wait for something, or to make force close
+            activeForwarder.startForwarding(socket, outSocket); // it should be registered if alive? to know during draining if we wait for something, or to make force close
         }
     }
 
