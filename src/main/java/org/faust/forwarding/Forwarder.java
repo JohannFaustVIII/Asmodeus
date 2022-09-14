@@ -6,13 +6,16 @@ import org.faust.statistics.StatisticsService;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Phaser;
 
 @Builder
-public class Forwarder {
+public class Forwarder { // TODO: should it ever exist? maybe its responsibility can be moved to Listener class?
 
     private final StatisticsService statisticsService;
     private final PcapEventHandler pcapEventHandler;
+    private final List<ForwardingStream> forwardingStreams = new ArrayList<>();
 
     public void startForwarding(Socket input, Socket output) throws IOException {
         // TODO: check addresses if correct
@@ -43,5 +46,8 @@ public class Forwarder {
 
         stream1.start();
         stream2.start();
+
+        forwardingStreams.add(stream1);
+        forwardingStreams.add(stream2);
     }
 }
