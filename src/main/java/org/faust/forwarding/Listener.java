@@ -18,18 +18,33 @@ public class Listener {
     private final PcapEventHandler pcapEventHandler;
     private Forwarder activeForwarder;
 
+    private final Object threadLock = new Object();
     private Thread listenerThread = null;
 
     public void startListenerThread() {
-        // TODO: check if thread is running to avoid multiple starting
-        listenerThread = new Thread(() -> {
-            try {
-                listen(); // TODO: consume IOException inside the method?
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (isListenerThreadRunning()) {
+            return;
+        }
+
+        synchronized (threadLock) {
+            if (isListenerThreadRunning()) {
+                return;
             }
-        });
-        listenerThread.start();
+
+            listenerThread = new Thread(() -> {
+                try {
+                    listen(); // TODO: consume IOException inside the method?
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            listenerThread.start();
+        }
+    }
+
+    private boolean isListenerThreadRunning() {
+        // TODO: is it enough to check?
+        return listenerThread != null && listenerThread.getState() != Thread.State.NEW && listenerThread.getState() != Thread.State.TERMINATED;
     }
 
     public void listen() throws IOException {
