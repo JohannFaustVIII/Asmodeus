@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-@Builder
 public class Listener {
 
     private final int inputPort;
@@ -20,6 +19,15 @@ public class Listener {
 
     private final Object threadLock = new Object();
     private Thread listenerThread = null;
+
+    @Builder
+    public Listener(int inputPort, int outputPort, String outIp, StatisticsService statisticsService, PcapEventHandler pcapEventHandler) {
+        this.inputPort = inputPort;
+        this.outputPort = outputPort;
+        this.outIp = outIp;
+        this.statisticsService = statisticsService;
+        this.pcapEventHandler = pcapEventHandler;
+    }
 
     public void startListenerThread() {
         if (isListenerThreadRunning()) {

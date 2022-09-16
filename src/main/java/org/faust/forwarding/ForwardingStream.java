@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Phaser;
 
-@Builder
 public class ForwardingStream implements Runnable {
 
     private final Phaser phaser;
@@ -26,6 +25,19 @@ public class ForwardingStream implements Runnable {
     private ForwardingStream linkedStream;
 
     private Thread currentThread; // TODO: to use to interrupt the thread
+
+    @Builder
+    public ForwardingStream(Phaser phaser, InputStream inputStream, OutputStream outputStream, StatisticsService statisticsService, PcapEventHandler pcapEventHandler, String inIp, String outIp, int inPort, int outPort) {
+        this.phaser = phaser;
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
+        this.statisticsService = statisticsService;
+        this.pcapEventHandler = pcapEventHandler;
+        this.inIp = inIp;
+        this.outIp = outIp;
+        this.inPort = inPort;
+        this.outPort = outPort;
+    }
 
     public void start() {
         currentThread = new Thread(this);
