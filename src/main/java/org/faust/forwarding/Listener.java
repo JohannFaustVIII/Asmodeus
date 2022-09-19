@@ -7,6 +7,7 @@ import org.faust.statistics.StatisticsService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Listener {
 
@@ -39,13 +40,7 @@ public class Listener {
                 return;
             }
 
-            listenerThread = new Thread(() -> {
-                try {
-                    listen(); // TODO: consume IOException inside the method?
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            listenerThread = new Thread(this::listen);
             listenerThread.start();
         }
     }
@@ -55,9 +50,9 @@ public class Listener {
         return listenerThread != null && listenerThread.getState() != Thread.State.NEW && listenerThread.getState() != Thread.State.TERMINATED;
     }
 
-    public void listen() throws IOException {
+    public void listen() {
         System.out.println("Starting server socket on port " + inputPort);
-        ServerSocket serverSocket = new ServerSocket(inputPort);
+        ServerSocket serverSocket = getServerSocket();
 
         activeForwarder = new Forwarder.ForwarderBuilder()
                 .pcapEventHandler(pcapEventHandler)
@@ -65,12 +60,47 @@ public class Listener {
                 .build(); // TODO: move to constructor??? to remove from builder
 
         while (!serverSocket.isClosed()) {
-            Socket socket = serverSocket.accept(); // it will pause the thread, interrupt may happen here?
+            Socket socket = listenSocket(serverSocket);
 
             System.out.println("Connecting to output " + outIp + ":" + outputPort);
-            Socket outSocket = new Socket(outIp, outputPort);
+            Socket outSocket = openClientSocket();
 
-            activeForwarder.startForwarding(socket, outSocket); // it should be registered if alive? to know during draining if we wait for something, or to make force close
+            activeForwarder.startForwarding(socket, outSocket);
+        }
+    }
+
+    private ServerSocket getServerSocket() {
+        try {
+            return new ServerSocket(inputPort);
+        } catch (IOException e) {
+            System.err.println("IOException was thrown for ServerSocket locking. Port: " + inputPort + " may be not available.");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Socket listenSocket(ServerSocket serverSocket) {
+        try {
+            return serverSocket.accept(); // it will pause the thread, interrupt may happen here?
+        } catch (IOException e) {
+            e.printStackTrace();
+            // TODO: probably, the thread should be closed in this place
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Socket openClientSocket() {
+        try {
+            return new Socket(outIp, outputPort);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            // here is unknown host
+            // TODO: to refactor
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // here is anything else, interrupt can happen during that?
+            // TODO: to refactor
+            throw new RuntimeException(e);
         }
     }
 
