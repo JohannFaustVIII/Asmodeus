@@ -82,6 +82,7 @@ public class Listener {
         try {
             return serverSocket.accept(); // it will pause the thread, interrupt may happen here?
         } catch (IOException e) {
+            System.err.println("IO exception during listening the socket: " + e);
             e.printStackTrace();
             // TODO: probably, the thread should be closed in this place
             throw new RuntimeException(e);
@@ -92,15 +93,13 @@ public class Listener {
         try {
             return new Socket(outIp, outputPort);
         } catch (UnknownHostException e) {
+            System.err.println("Exception during determining IP address of the host: " + outIp);
             e.printStackTrace();
-            // here is unknown host
-            // TODO: to refactor
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // TODO: still to refactor?
         } catch (IOException e) {
+            System.err.println("IO exception during opening the socket: " + e);
             e.printStackTrace();
-            // here is anything else, interrupt can happen during that?
-            // TODO: to refactor
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // TODO: still to refactor + add handling of interrupt
         }
     }
 

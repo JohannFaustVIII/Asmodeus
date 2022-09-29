@@ -56,9 +56,8 @@ public class Forwarder { // TODO: should it ever exist? maybe its responsibility
             forwardingStreams.add(stream1);
             forwardingStreams.add(stream2);
         } catch (IOException e) {
+            System.err.println("Exception during starting forwarding streams: " + e);
             e.printStackTrace();
-            // TODO: to refactor
-            throw new RuntimeException(e);
         }
     }
 }
